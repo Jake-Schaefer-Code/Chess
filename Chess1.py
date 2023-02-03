@@ -13,3 +13,5 @@ class Board:
         self.y = y
     ImBoard = Image.open("chessboard.png")
     ImBoard.show()
+class Game:
+    
