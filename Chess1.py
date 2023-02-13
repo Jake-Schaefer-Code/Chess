@@ -6,6 +6,7 @@ from tkinter import *
 from tkinter import ttk
 
 root = Tk()
+frm = ttk.Frame(root, padding=10) #testing stuff from the tkinter python interface
 
 Im = Image.open("chessboard.png")
 Im.show()
