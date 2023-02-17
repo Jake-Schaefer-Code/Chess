@@ -9,6 +9,8 @@ class Board:
     def __init__(self, screen):
         self.screen = screen
         self.color = None
+        self.board = [["--","--","--","--","--","--","--","--"] for _ in range(8)]
+        print(self.board)
 
 
 
