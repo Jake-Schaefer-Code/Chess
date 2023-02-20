@@ -27,18 +27,45 @@ class Board:
         self.row = pos[1]
         return self.board[self.row][self.col]
     
+    # -- Preserving old code below, in case new code does not function properly. Will delete if all is well. - Dean
+    #def moveto(self, pos1, pos2):
+        #piece1 = self.board[pos1[1]][pos1[0]]
+        #piece2 = self.board[pos2[1]][pos2[0]]
+        #if piece1 != "--" and piece2[0] != piece1[0]:
+            #self.board[pos1[1]][pos1[0]] = "--"
+            #self.board[pos2[1]][pos2[0]] = piece1
+        #elif piece2[0] == piece1[0]:
+            #print("cannot take your own piece")
+        #if piece2[0] != piece1[0] and piece2[0] != "-":
+            #print("captured")
+    # -- Check comment beginning with "--" above. -Dean
+            
     def moveto(self, pos1, pos2):
         piece1 = self.board[pos1[1]][pos1[0]]
         piece2 = self.board[pos2[1]][pos2[0]]
+        dx = pos2[0] - pos1[0]
+        dy = pos2[1] - pos1[1]
         if piece1 != "--" and piece2[0] != piece1[0]:
-            self.board[pos1[1]][pos1[0]] = "--"
-            self.board[pos2[1]][pos2[0]] = piece1
+            if abs(dx) == abs(dy):  # diagonal move
+                # check if there are any pieces in between
+                steps = abs(dx) - 1
+                x_dir = 1 if dx > 0 else -1
+                y_dir = 1 if dy > 0 else -1
+                for step in range(steps):
+                    x = pos1[0] + x_dir * (step + 1)
+                    y = pos1[1] + y_dir * (step + 1)
+                    if self.board[y][x] != "--":
+                        print("Cannot jump over other pieces.")
+                        return
+                self.board[pos1[1]][pos1[0]] = "--"
+                self.board[pos2[1]][pos2[0]] = piece1
+            else:
+                print("Invalid move.")
         elif piece2[0] == piece1[0]:
-            print("cannot take your own piece")
+            print("Cannot take your own piece.")
         if piece2[0] != piece1[0] and piece2[0] != "-":
-            print("captured")
+            print("Captured.")
         
-
     def draw(self):
         for i in range(8):
             for j in range(8):
