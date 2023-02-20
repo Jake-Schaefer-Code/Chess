@@ -9,11 +9,14 @@ column = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
 Width = 512
 Height = 512
 
+
+
+
 class Board:
     def __init__(self, screen):
         self.screen = screen
         self.color = None
-        self.board = [["","","","","","","",""] for _ in range(8)]
+        self.board = [["--","--","--","--","--","--","--","--"] for _ in range(8)]
         self.board[0] = ["br","bn","bb","bq","bk","bb","bn","br"]
         self.board[1] = ["bp","bp","bp","bp","bp","bp","bp","bp"]
         self.board[6] = ["wp","wp","wp","wp","wp","wp","wp","wp"]
@@ -21,15 +24,21 @@ class Board:
         print(self.board)
     
     def get_square(self, pos):
-        self.col = pos[0]//(Width//8)
-        self.row = pos[1]//(Height//8)
+        self.col = pos[0]
+        self.row = pos[1]
         return self.board[self.row][self.col]
     
     def moveto(self, pos1, pos2):
         piece1 = self.board[pos1[1]][pos1[0]]
         piece2 = self.board[pos2[1]][pos2[0]]
-        self.board[pos1[1]][pos1[0]] = piece2
-        self.board[pos2[1]][pos2[0]] = piece1
+        if piece1 != "--" and piece2[0] != piece1[0]:
+            self.board[pos1[1]][pos1[0]] = "--"
+            self.board[pos2[1]][pos2[0]] = piece1
+        elif piece2[0] == piece1[0]:
+            print("cannot take your own piece")
+        if piece2[0] != piece1[0] and piece2[0] != "-":
+            print("captured")
+        
 
     def draw(self):
         for i in range(8):
@@ -55,29 +64,54 @@ class Board:
             for j in range(8):
                 
                 piece = self.board[j][i]
-                if piece != "":
+                if piece != "--":
                     self.screen.blit(pygame.transform.scale(piecedic[piece],(Width//8,Height//8)), pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8))
 
-class movement:
-    def __init___(self, screen):
+class Movement:
+    def __init__(self, screen, boardclass, board, pos1, pos2):
         self.screen = screen
+        self.board = board
+        self.boardclass = boardclass
+        self.pos1 = pos1
+        self.pos2 = pos2
+        self.sq1 = board[pos1[1]][pos1[0]]
+        self.sq2 = board[pos2[1]][pos2[0]]
+        
+    def moveP(self):
+        if self.pos1[0] == self.pos2[0]:
+            self.boardclass.moveto(self.pos1,self.pos2)
 
+    def moveN(self):
+        print("move knight")
+    def moveB(self):
+        print("move bishop")
+    def moveR(self):
+        print("move rook")
+    def moveQ(self):
+        print("move queen")
+    def moveK(self):
+        print("move king")
 
+        
 def main():
     pygame.init()
     pygame.display.init()
-
     screen = pygame.display.set_mode((Width,Height))
     screen.fill(pygame.Color("white"))
     board1 = Board(screen)
-
     for piece in piecelist:
         piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
+    square = pygame.Rect((0,0), (512,512))
+    
    
     
-    clicks = []
+    
 
-    square = pygame.Rect((0,0), (512,512))
+    
+    
+
+    
+    clicks = []
     while True:
         
         for event in pygame.event.get():
@@ -89,7 +123,13 @@ def main():
                     print(pos1)
                     clicks.append(pos1)
                     if len(clicks) == 2:
-                        board1.moveto(clicks[0],clicks[1])
+                        piece1 = board1.get_square(clicks[0])
+                        if piece1 != "":
+                            move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
+                            movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
+                            movedic[piece1[1]]()
+                            #board1.moveto(clicks[0],clicks[1])
+                            
                         clicks = []
                               
         
