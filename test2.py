@@ -2,24 +2,24 @@ import pygame
 import sys
 
 
-piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp"]
-piecedic = {}
-squaredic = {}
-column = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
-Width = 512
+piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp"] # initialization of all the pieces present on a chessboard
+piecedic = {}                                                                        # Dictionary of all the pieces (used to make them appear as images on the board later)
+squaredic = {}                                                                       # Dictionary of all the squares (used to draw the actual board later)
+column = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}                           # Dictionary of the identity of each square according to the rules of chess
+Width = 512                                                                          # Initialization of the width and height of the board itself - to be in use later
 Height = 512
 
 
 
-class Board:
-    def __init__(self, screen):
+class Board: # definition of the board class
+    def __init__(self, screen): # definition of the initial method
         self.screen = screen
         self.color = None
-        self.board = [["--","--","--","--","--","--","--","--"] for _ in range(8)]
-        self.board[0] = ["br","bn","bb","bq","bk","bb","bn","br"]
-        self.board[1] = ["bp","bp","bp","bp","bp","bp","bp","bp"]
-        self.board[6] = ["wp","wp","wp","wp","wp","wp","wp","wp"]
-        self.board[7] = ["wr","wn","wb","wq","wk","wb","wn","wr"]
+        self.board = [["--","--","--","--","--","--","--","--"] for _ in range(8)] # Initializing the board as 8 rows of blank spaces to start with
+        self.board[0] = ["br","bn","bb","bq","bk","bb","bn","br"] # Assigning the back rank of the board with the non-pawn pieces in their correct order
+        self.board[1] = ["bp","bp","bp","bp","bp","bp","bp","bp"] # Assigning all of the black pawns to the second last rank
+        self.board[6] = ["wp","wp","wp","wp","wp","wp","wp","wp"] # Assigning all of the white pawns to the second rank
+        self.board[7] = ["wr","wn","wb","wq","wk","wb","wn","wr"] # Assigning all of the white non-pawn pieces in the first rank
         print(self.board)
     
     def get_square(self, pos):
