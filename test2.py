@@ -11,7 +11,6 @@ Height = 512
 
 
 
-
 class Board:
     def __init__(self, screen):
         self.screen = screen
@@ -118,6 +117,7 @@ class Movement:
 
         
 def main():
+    turn = 1
     pygame.init()
     pygame.display.init()
     screen = pygame.display.set_mode((Width,Height))
@@ -128,13 +128,6 @@ def main():
     square = pygame.Rect((0,0), (512,512))
     
    
-    
-    
-
-    
-    
-
-    
     clicks = []
     while True:
         
@@ -148,11 +141,16 @@ def main():
                     clicks.append(pos1)
                     if len(clicks) == 2:
                         piece1 = board1.get_square(clicks[0])
-                        if piece1 != "--":
+                        if piece1 != "--" and turn%2==1 and piece1[0] == "w":
                             move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
                             movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
                             movedic[piece1[1]]()
-                            
+                            turn +=1
+                        elif piece1 != "--" and turn%2==0 and piece1[0] == "b":
+                            move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
+                            movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
+                            movedic[piece1[1]]()
+                            turn +=1
                         clicks = []
                               
         
