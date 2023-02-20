@@ -116,8 +116,15 @@ class Movement:
                 print("move black knight")
                 
     def moveB(self):
-        print("move bishop")
-        self.boardclass.moveto(self.pos1,self.pos2)
+        if self.sq1[0] == "w":
+            if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]) and self.sq2[0] != "w":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move white bishop")
+        if self.sq1[0] == "b":
+            if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]) and self.sq2[0] != "b":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move black bishop")
+                
     def moveR(self):
         print("move rook")
         self.boardclass.moveto(self.pos1,self.pos2)
