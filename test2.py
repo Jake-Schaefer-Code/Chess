@@ -78,19 +78,43 @@ class Movement:
         self.sq2 = board[pos2[1]][pos2[0]]
         
     def moveP(self):
-        if self.pos1[0] == self.pos2[0]:
-            self.boardclass.moveto(self.pos1,self.pos2)
+        if self.sq1[0] == "w":
+            if self.pos1[0] == self.pos2[0] and self.sq2[0] != "b":
+                if self.pos1[1] > self.pos2[1]:
+                    self.boardclass.moveto(self.pos1,self.pos2)
+                    print("move white pawn")
+            elif self.sq2[0] == "b":
+                if self.pos1[1] > self.pos2[1] and (self.pos1[1] == self.pos2[1] + 1):
+                    if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move white pawn")
+        if self.sq1[0] == "b":
+            if self.pos1[0] == self.pos2[0] and self.sq2[0] != "w":
+                if self.pos1[1] < self.pos2[1]:
+                    self.boardclass.moveto(self.pos1,self.pos2)
+                    print("move black pawn")
+            elif self.sq2[0] == "w":
+                if self.pos1[1] < self.pos2[1] and (self.pos1[1] == self.pos2[1] - 1):
+                    if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move black pawn")
+
 
     def moveN(self):
         print("move knight")
+        self.boardclass.moveto(self.pos1,self.pos2)
     def moveB(self):
         print("move bishop")
+        self.boardclass.moveto(self.pos1,self.pos2)
     def moveR(self):
         print("move rook")
+        self.boardclass.moveto(self.pos1,self.pos2)
     def moveQ(self):
         print("move queen")
+        self.boardclass.moveto(self.pos1,self.pos2)
     def moveK(self):
         print("move king")
+        self.boardclass.moveto(self.pos1,self.pos2)
 
         
 def main():
@@ -124,11 +148,10 @@ def main():
                     clicks.append(pos1)
                     if len(clicks) == 2:
                         piece1 = board1.get_square(clicks[0])
-                        if piece1 != "":
+                        if piece1 != "--":
                             move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
                             movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
                             movedic[piece1[1]]()
-                            #board1.moveto(clicks[0],clicks[1])
                             
                         clicks = []
                               
