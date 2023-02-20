@@ -22,10 +22,10 @@ class Board: # definition of the board class
         self.board[7] = ["wr","wn","wb","wq","wk","wb","wn","wr"] # Assigning all of the white non-pawn pieces in the first rank
         print(self.board)
     
-    def get_square(self, pos):
-        self.col = pos[0]
-        self.row = pos[1]
-        return self.board[self.row][self.col]
+    def get_square(self, pos): # definition of the function to return the value of each square (not in chess notation)
+        self.col = pos[0] #intialization of the variable that stores the value of the column
+        self.row = pos[1] #initialization of the variable that stores the value of the row
+        return self.board[self.row][self.col] 
     
     # -- Preserving old code below, in case new code does not function properly. Will delete if all is well. - Dean
     #def moveto(self, pos1, pos2):
