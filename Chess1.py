@@ -182,8 +182,21 @@ class Movement:
                 self.boardclass.moveto(self.pos1,self.pos2)
 
     def moveQ(self):
-        print("move queen")
-        self.boardclass.moveto(self.pos1,self.pos2)
+        if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]:
+            if self.sq1[0] == "w" and self.sq2[0] != "w":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move white queen")
+            elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move black queen")
+        elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]):
+            if self.sq1[0] == "w" and self.sq2[0] != "w":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move white queen")
+            elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move black queen")
+                
     def moveK(self):
         print("move king")
         self.boardclass.moveto(self.pos1,self.pos2)
