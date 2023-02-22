@@ -79,21 +79,41 @@ class Movement:
         
         
     def moveP(self):
+        firstmove = False
+
         if self.sq1[0] == "w":
+            if self.pos1[1] == 6:
+                firstmove = True
+
+
+            
             if self.pos1[0] == self.pos2[0] and self.sq2[0] != "b":
                 if self.pos1[1] > self.pos2[1]:
-                    self.boardclass.moveto(self.pos1,self.pos2)
-                    print("move white pawn")
+                    if firstmove and (self.pos1[1] == self.pos2[1] + 2 or self.pos1[1] == self.pos2[1] + 1):
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move white pawn")
+                    elif self.pos1[1] == self.pos2[1] + 1:
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move white pawn")
             elif self.sq2[0] == "b":
                 if self.pos1[1] > self.pos2[1] and (self.pos1[1] == self.pos2[1] + 1):
                     if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
                         self.boardclass.moveto(self.pos1,self.pos2)
                         print("move white pawn")
+
+
         if self.sq1[0] == "b":
+            if self.pos1[1] == 2:
+                firstmove = True
+
             if self.pos1[0] == self.pos2[0] and self.sq2[0] != "w":
                 if self.pos1[1] < self.pos2[1]:
-                    self.boardclass.moveto(self.pos1,self.pos2)
-                    print("move black pawn")
+                    if firstmove and (self.pos1[1] == self.pos2[1] - 2 or self.pos1[1] == self.pos2[1] - 1):
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move black pawn")
+                    elif self.pos1[1] == self.pos2[1] - 1:
+                        self.boardclass.moveto(self.pos1,self.pos2)
+                        print("move black pawn")         
             elif self.sq2[0] == "w":
                 if self.pos1[1] < self.pos2[1] and (self.pos1[1] == self.pos2[1] - 1):
                     if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
@@ -191,11 +211,13 @@ def main():
                 if event.button == 1:  # left mouse button?
                     pos1 = board1.makeButton(event.pos, square)
                     print(pos1)
-                    
-                    clicks.append(pos1)
-                    #print(clicks)
+                    if len(clicks) == 0 and board1.get_square(pos1) == "--":
+                        pass
+                    else:
+                        clicks.append(pos1)
                     if len(clicks) == 2:
                         piece1 = board1.get_square(clicks[0])
+
                         if piece1 != "--" and len(turns)%2==0 and piece1[0] == "w":
                             move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
                             movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
@@ -205,6 +227,9 @@ def main():
                             move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
                             movedic = {"p":move.moveP,"n":move.moveN,"b":move.moveB, "r":move.moveR, "q":move.moveQ, "k":move.moveK}
                             movedic[piece1[1]]()
+                        
+                        elif piece1 == "--":
+                            clicks = []
                             
                         clicks = []
                     #elif len(clicks) > 2:
