@@ -127,28 +127,20 @@ class Movement:
 
 
     def moveN(self):
-    # Check if the move is valid for a knight, which moves in an L-shape pattern with 2 squares in one direction and 1 square in the other direction.
-        if abs(self.pos1[0]-self.pos2[0]) == 2 and abs(self.pos1[1]-self.pos2[1]) == 1:
-            # Check if the piece being moved is a white knight and the square being moved to is not occupied by a white piece, or if the piece being moved is a black knight and the square being moved to is not occupied by a black piece.
-            if self.sq1[0] == "w" and self.sq2[0] != "w":
-                # If the move is valid and the piece being moved is a white knight, move the piece and print a message indicating that a white knight was moved.
-                self.boardclass.moveto(self.pos1,self.pos2)
-                print("move white knight")
-            elif self.sq1[0] == "b" and self.sq2[0] != "b":
-                # If the move is valid and the piece being moved is a black knight, move the piece and print a message indicating that a black knight was moved.
-                self.boardclass.moveto(self.pos1,self.pos2)
-                print("move black knight")
-        # Check if the move is valid for a knight, which moves in an L-shape pattern with 1 square in one direction and 2 squares in the other direction.
-        elif abs(self.pos1[0]-self.pos2[0]) == 1 and abs(self.pos1[1]-self.pos2[1]) == 2:
-            # Check if the piece being moved is a white knight and the square being moved to is not occupied by a white piece, or if the piece being moved is a black knight and the square being moved to is not occupied by a black piece.
-            if self.sq1[0] == "w" and self.sq2[0] != "w":
-                # If the move is valid and the piece being moved is a white knight, move the piece and print a message indicating that a white knight was moved.
-                self.boardclass.moveto(self.pos1,self.pos2)
-                print("move white knight")
-            elif self.sq1[0] == "b" and self.sq2[0] != "b":
-                # If the move is valid and the piece being moved is a black knight, move the piece and print a message indicating that a black knight was moved.
-                self.boardclass.moveto(self.pos1,self.pos2)
-                print("move black knight")
+        if abs(self.pos1[0]-self.pos2[0]) == 2 and abs(self.pos1[1]-self.pos2[1]) == 1: # Checking if the move is valid for a knight: L-shape pattern with 2 squares in one direction and 1 square in the other direction
+            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the knight is white, and whether the destination square is not occupied by a white piece
+                self.boardclass.moveto(self.pos1,self.pos2) # Moving the queen to the destination square
+                print("move white knight") # Printing a message to indicate that the move has been made
+            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the knight is black, and the destination square is not occupied by a black piece
+                self.boardclass.moveto(self.pos1,self.pos2) # Moving the knight to the destination square
+                print("move black knight") # Printing a message to indicate that the move has been made
+        elif abs(self.pos1[0]-self.pos2[0]) == 1 and abs(self.pos1[1]-self.pos2[1]) == 2: # Checking if the move is valid for a knight, which moves in an L-shape pattern with 1 square in one direction and 2 squares in the other direction.
+            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the knight is white, and whether the destination square is not occupied by a white piece
+                self.boardclass.moveto(self.pos1,self.pos2) # Moving the knight to the destination square
+                print("move white knight") # Printing a message to indicate that the move has been made
+            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the knight is black, and the destination square is not occupied by a black piece
+                self.boardclass.moveto(self.pos1,self.pos2) # Moving the knight to the destination square
+                print("move black knight") # Printing a message to indicate that the move has been made
                 
     def moveB(self):
         if self.sq1[0] == "w":
@@ -165,34 +157,20 @@ class Movement:
         self.boardclass.moveto(self.pos1,self.pos2)
         
     def moveQ(self):
-    #Check if the queen moves either horizontally or vertically
-        if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]:
-            #If the queen is white and the destination square is not occupied by a white piece
-            if self.sq1[0] == "w" and self.sq2[0] != "w":
-                #Move the queen to the destination square
-                self.boardclass.moveto(self.pos1, self.pos2)
-                #Print a message to indicate the move
-                print("move white queen")
-            #If the queen is black and the destination square is not occupied by a black piece
-            elif self.sq1[0] == "b" and self.sq2[0] != "b":
-                #Move the queen to the destination square
-                self.boardclass.moveto(self.pos1, self.pos2)
-                #Print a message to indicate the move
-                print("move black queen")
-        #Check if the queen moves diagonally
-        elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]):
-            #If the queen is white and the destination square is not occupied by a white piece
-            if self.sq1[0] == "w" and self.sq2[0] != "w":
-                #Move the queen to the destination square
-                self.boardclass.moveto(self.pos1, self.pos2)
-                #Print a message to indicate the move
-                print("move white queen")
-            #If the queen is black and the destination square is not occupied by a black piece
-            elif self.sq1[0] == "b" and self.sq2[0] != "b":
-                #Move the queen to the destination square
-                self.boardclass.moveto(self.pos1, self.pos2)
-                #Print a message to indicate the move
-                print("move black queen")
+        if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]: # Checking if the queen is moving horizontally or vertically
+            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the queen is white, and whether the destination square is not occupied by a white piece
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the queen to the destination square
+                print("move white queen") # Printing a message to indicate that the move has been made
+            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the queen is black, and the destination square is not occupied by a black piece
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the queen to the destination square
+                print("move black queen") # Printing a message to indicate that the move has been made
+        elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]): # Checking if the queen is moving diagonally
+            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the queen is white and the destination square is not occupied by a white piece
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the queen to the destination square
+                print("move white queen") # Printing a message to indicate that the move has been made
+            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the queen is black, and the destination square is not occupied by a black piece
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the queen to the destination square
+                print("move black queen") # Printing a message to indicate that the move has been made
 
     def moveK(self):
         print("move king")
