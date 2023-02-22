@@ -165,19 +165,33 @@ class Movement:
         self.boardclass.moveto(self.pos1,self.pos2)
         
     def moveQ(self):
+    #Check if the queen moves either horizontally or vertically
         if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]:
+            #If the queen is white and the destination square is not occupied by a white piece
             if self.sq1[0] == "w" and self.sq2[0] != "w":
+                #Move the queen to the destination square
                 self.boardclass.moveto(self.pos1, self.pos2)
+                #Print a message to indicate the move
                 print("move white queen")
+            #If the queen is black and the destination square is not occupied by a black piece
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                #Move the queen to the destination square
                 self.boardclass.moveto(self.pos1, self.pos2)
+                #Print a message to indicate the move
                 print("move black queen")
+        #Check if the queen moves diagonally
         elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]):
+            #If the queen is white and the destination square is not occupied by a white piece
             if self.sq1[0] == "w" and self.sq2[0] != "w":
+                #Move the queen to the destination square
                 self.boardclass.moveto(self.pos1, self.pos2)
+                #Print a message to indicate the move
                 print("move white queen")
+            #If the queen is black and the destination square is not occupied by a black piece
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                #Move the queen to the destination square
                 self.boardclass.moveto(self.pos1, self.pos2)
+                #Print a message to indicate the move
                 print("move black queen")
 
     def moveK(self):
