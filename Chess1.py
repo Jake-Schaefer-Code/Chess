@@ -103,7 +103,7 @@ class Movement:
 
 
         if self.sq1[0] == "b":
-            if self.pos1[1] == 2:
+            if self.pos1[1] == 1:
                 firstmove = True
 
             if self.pos1[0] == self.pos2[0] and self.sq2[0] != "w":
