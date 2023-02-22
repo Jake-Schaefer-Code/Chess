@@ -127,18 +127,26 @@ class Movement:
 
 
     def moveN(self):
+    # Check if the move is valid for a knight, which moves in an L-shape pattern with 2 squares in one direction and 1 square in the other direction.
         if abs(self.pos1[0]-self.pos2[0]) == 2 and abs(self.pos1[1]-self.pos2[1]) == 1:
+            # Check if the piece being moved is a white knight and the square being moved to is not occupied by a white piece, or if the piece being moved is a black knight and the square being moved to is not occupied by a black piece.
             if self.sq1[0] == "w" and self.sq2[0] != "w":
+                # If the move is valid and the piece being moved is a white knight, move the piece and print a message indicating that a white knight was moved.
                 self.boardclass.moveto(self.pos1,self.pos2)
                 print("move white knight")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                # If the move is valid and the piece being moved is a black knight, move the piece and print a message indicating that a black knight was moved.
                 self.boardclass.moveto(self.pos1,self.pos2)
                 print("move black knight")
+        # Check if the move is valid for a knight, which moves in an L-shape pattern with 1 square in one direction and 2 squares in the other direction.
         elif abs(self.pos1[0]-self.pos2[0]) == 1 and abs(self.pos1[1]-self.pos2[1]) == 2:
+            # Check if the piece being moved is a white knight and the square being moved to is not occupied by a white piece, or if the piece being moved is a black knight and the square being moved to is not occupied by a black piece.
             if self.sq1[0] == "w" and self.sq2[0] != "w":
+                # If the move is valid and the piece being moved is a white knight, move the piece and print a message indicating that a white knight was moved.
                 self.boardclass.moveto(self.pos1,self.pos2)
                 print("move white knight")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                # If the move is valid and the piece being moved is a black knight, move the piece and print a message indicating that a black knight was moved.
                 self.boardclass.moveto(self.pos1,self.pos2)
                 print("move black knight")
                 
