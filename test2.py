@@ -152,8 +152,29 @@ class Movement:
                 print("move black bishop") # Printing a message indicating that the black bishop was moved
                 
     def moveR(self):
-        print("move rook")
-        self.boardclass.moveto(self.pos1,self.pos2)
+        dx = self.pos2[0] - self.pos1[0]
+        dy = self.pos1[1] - self.pos2[1]
+        blocked = False
+        if dx == 0:
+            y_dir = 1 if dy > 0 else -1
+            steps = abs(dy) - 1
+            for step in range(steps):
+                y = self.pos2[1] + y_dir * (step + 1)
+                x = self.pos1[0]
+                if self.board[y][x] != "--":
+                    blocked = True
+            if blocked != True:
+                self.boardclass.moveto(self.pos1,self.pos2)
+        elif dy == 0:
+            x_dir = 1 if dx > 0 else -1
+            steps = abs(dx) - 1
+            for step in range(steps):
+                x = self.pos1[0] + x_dir * (step + 1)
+                y = self.pos1[1]
+                if self.board[y][x] != "--":
+                    blocked = True
+            if blocked != True:
+                self.boardclass.moveto(self.pos1,self.pos2)
         
     def moveQ(self):
         if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]: # Checking if the queen is moving horizontally or vertically
