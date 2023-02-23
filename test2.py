@@ -143,14 +143,13 @@ class Movement:
                 print("move black knight") # Printing a message to indicate that the move has been made
                 
     def moveB(self):
-        if self.sq1[0] == "w":
-            if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]) and self.sq2[0] != "w":
-                self.boardclass.moveto(self.pos1, self.pos2)
-                print("move white bishop")
-        if self.sq1[0] == "b":
-            if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]) and self.sq2[0] != "b":
-                self.boardclass.moveto(self.pos1, self.pos2)
-                print("move black bishop")
+        if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]): # Checking if the bishop is moving diagonally 
+            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the bishop's starting square is white and the ending square is not white
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the bishop piece to the destination square
+                print("move white bishop") # Printing a message indicating that the white bishop was moved
+            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the bishop's starting square is black and the ending square is not black
+                self.boardclass.moveto(self.pos1, self.pos2) # Moving the bishop piece to the destination square
+                print("move black bishop") # Printing a message indicating that the black bishop was moved
                 
     def moveR(self):
         print("move rook")
@@ -173,9 +172,13 @@ class Movement:
                 print("move black queen") # Printing a message to indicate that the move has been made
 
     def moveK(self):
-        print("move king")
-        self.boardclass.moveto(self.pos1,self.pos2)
-
+    if abs(self.pos1[0] - self.pos2[0]) <= 1 and abs(self.pos1[1] - self.pos2[1]) <= 1:
+        if self.sq1[0] == "w" and self.sq2[0] != "w":
+            self.boardclass.moveto(self.pos1, self.pos2)
+            print("move white king")
+        elif self.sq1[0] == "b" and self.sq2[0] != "b":
+            self.boardclass.moveto(self.pos1, self.pos2)
+            print("move black king")
         
 def main():
     turn = 1
