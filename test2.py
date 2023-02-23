@@ -202,13 +202,13 @@ class Movement:
                 print("move black queen") # Printing a message to indicate that the move has been made
 
     def moveK(self):
-    if abs(self.pos1[0] - self.pos2[0]) <= 1 and abs(self.pos1[1] - self.pos2[1]) <= 1:
-        if self.sq1[0] == "w" and self.sq2[0] != "w":
-            self.boardclass.moveto(self.pos1, self.pos2)
-            print("move white king")
-        elif self.sq1[0] == "b" and self.sq2[0] != "b":
-            self.boardclass.moveto(self.pos1, self.pos2)
-            print("move black king")
+        if abs(self.pos1[0] - self.pos2[0]) <= 1 and abs(self.pos1[1] - self.pos2[1]) <= 1:
+            if self.sq1[0] == "w" and self.sq2[0] != "w":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move white king")
+            elif self.sq1[0] == "b" and self.sq2[0] != "b":
+                self.boardclass.moveto(self.pos1, self.pos2)
+                print("move black king")
         
 def main():
     turn = 1
