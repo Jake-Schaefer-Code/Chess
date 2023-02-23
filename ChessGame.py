@@ -238,7 +238,7 @@ def main():
 
                     if (len(clicks) == 0 and board1.get_square(selectedsq) == "--"):
                         clicks = []
-                    elif sq1 == selectedsq:
+                    elif sq1 == selectedsq and len(clicks) == 1:
                         board1.unhighlight(clicks[0])
                         clicks = []
                         sq1 = None
