@@ -2,8 +2,10 @@ import pygame
 import sys
 
 
-piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp"]
+piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
+             "wkh", "wqh", "wrh", "wbh", "wnh", "wph", "bkh", "bqh", "brh", "bbh", "bnh", "bph"]
 piecedic = {}
+highlightdic = {}
 squaredic = {}
 column = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
 Width = 512
@@ -57,7 +59,6 @@ class Board:
             if rect.collidepoint(cur):
                 pos1 = pygame.mouse.get_pos()[0]//(Width//8)
                 pos2 = pygame.mouse.get_pos()[1]//(Height//8)
-            
                 return (pos1,pos2)
 
     def draw_piece(self): #checks each square on the board for a piece and draws it if there is one
@@ -66,6 +67,13 @@ class Board:
                 piece = self.board[j][i]
                 if piece != "--":
                     self.screen.blit(pygame.transform.scale(piecedic[piece],(Width//8,Height//8)), pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8))
+    
+    def highlight(self, piece, pos):
+        self.board[pos[1]][pos[0]] += "h"
+        #self.screen.blit(pygame.transform.scale(piecedic[piece],(Width//8,Height//8)), pygame.Rect((Width//8)*pos[0],(Height//8)*pos[1],Width//8,Height//8))
+    def unhighlight(self, pos):
+        self.board[pos[1]][pos[0]] = self.board[pos[1]][pos[0]][:2]
+
 
 class Movement:
     def __init__(self, screen, boardclass, board, pos1, pos2):
@@ -215,25 +223,37 @@ def main():
     board1 = Board(screen)
     for piece in piecelist:
         piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
+        #highlightdic[piece + "h"] = pygame.image.load("highlighted/"+piece+"h.PNG")
     square = pygame.Rect((0,0), (512,512))
     
-   
+    sq1 = None
     clicks = []
     while True:
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # left mouse button?
-                    pos1 = board1.makeButton(event.pos, square)
-                    print(pos1)
-                    if len(clicks) == 0 and board1.get_square(pos1) == "--":
-                        pass
+                if event.button == 1: 
+                    selectedsq = board1.makeButton(event.pos, square)
+
+                    if (len(clicks) == 0 and board1.get_square(selectedsq) == "--"):
+                        clicks = []
+                    elif sq1 == selectedsq:
+                        board1.unhighlight(clicks[0])
+                        clicks = []
+                        sq1 = None
                     else:
-                        clicks.append(pos1)
-                    if len(clicks) == 2:
+                        clicks.append(selectedsq)
+                        sq1 = selectedsq
                         piece1 = board1.get_square(clicks[0])
+                        if len(clicks) == 1:
+                            board1.highlight(piece1, selectedsq)
+                    print(clicks)
+
+                    if len(clicks) == 2:
+                        board1.unhighlight(clicks[0])
+                        piece1 = board1.get_square(clicks[0])
+                        
 
                         if piece1 != "--" and len(turns)%2==0 and piece1[0] == "w":
                             move = Movement(screen, board1, board1.board, clicks[0],clicks[1])
@@ -247,6 +267,8 @@ def main():
                         
                         elif piece1 == "--":
                             clicks = []
+                        
+                        
                             
                         clicks = []
                     #elif len(clicks) > 2:
