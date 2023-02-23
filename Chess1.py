@@ -34,11 +34,11 @@ class Board:
             self.board[pos2[1]][pos2[0]] = piece1
             turns.append((pos1,pos2))
         elif piece2[0] == piece1[0]:
-            print("cannot take your own piece")
+            print("You cannot take your own piece.")
         if (piece2[0] != piece1[0]) and (piece2[0] != "-"):
-            print("captured")
+            print("Captured!")
         else:
-            print("not captured")
+            print("Successful move.")
         
 
     def draw(self):
@@ -91,15 +91,15 @@ class Movement:
                 if self.pos1[1] > self.pos2[1]:
                     if firstmove and (self.pos1[1] == self.pos2[1] + 2 or self.pos1[1] == self.pos2[1] + 1):
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move white pawn")
+                        print("Moved white pawn.")
                     elif self.pos1[1] == self.pos2[1] + 1:
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move white pawn")
+                        print("Moved white pawn.")
             elif self.sq2[0] == "b":
                 if self.pos1[1] > self.pos2[1] and (self.pos1[1] == self.pos2[1] + 1):
                     if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move white pawn")
+                        print("Moved white pawn.")
 
 
         if self.sq1[0] == "b":
@@ -110,32 +110,32 @@ class Movement:
                 if self.pos1[1] < self.pos2[1]:
                     if firstmove and (self.pos1[1] == self.pos2[1] - 2 or self.pos1[1] == self.pos2[1] - 1):
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move black pawn")
+                        print("Moved black pawn.")
                     elif self.pos1[1] == self.pos2[1] - 1:
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move black pawn")         
+                        print("Moved black pawn.")         
             elif self.sq2[0] == "w":
                 if self.pos1[1] < self.pos2[1] and (self.pos1[1] == self.pos2[1] - 1):
                     if self.pos1[0] == self.pos2[0] + 1 or self.pos1[0] == self.pos2[0] - 1:
                         self.boardclass.moveto(self.pos1,self.pos2)
-                        print("move black pawn")
+                        print("Moved black pawn.")
                         
 
     def moveN(self):
         if abs(self.pos1[0]-self.pos2[0]) == 2 and abs(self.pos1[1]-self.pos2[1]) == 1:
             if self.sq1[0] == "w" and self.sq2[0] != "w":
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move white knight")
+                print("Moved white knight.")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move black knight")
+                print("Moved black knight.")
         elif abs(self.pos1[0]-self.pos2[0]) == 1 and abs(self.pos1[1]-self.pos2[1]) == 2:
             if self.sq1[0] == "w" and self.sq2[0] != "w":
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move white knight")
+                print("Moved white knight.")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move black knight")
+                print("Moved black knight.")
 
 
     def moveB(self):
@@ -185,17 +185,17 @@ class Movement:
         if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]:
             if self.sq1[0] == "w" and self.sq2[0] != "w":
                 self.boardclass.moveto(self.pos1, self.pos2)
-                print("move white queen")
+                print("Moved white queen.")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
                 self.boardclass.moveto(self.pos1, self.pos2)
-                print("move black queen")
+                print("Moved black queen.")
         elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]):
             if self.sq1[0] == "w" and self.sq2[0] != "w":
                 self.boardclass.moveto(self.pos1, self.pos2)
-                print("move white queen")
+                print("Moved white queen.")
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
                 self.boardclass.moveto(self.pos1, self.pos2)
-                print("move black queen")
+                print("Moved black queen.")
                 
     def moveK(self):
         def moveK(self):
@@ -203,18 +203,18 @@ class Movement:
             if self.pos1[0] == self.pos2[0] and self.sq2[0] != "b":
                 if self.pos1[1] == self.pos2[1] + 2 or self.pos1[1] == self.pos2[1] + 1:
                     self.boardclass.moveto(self.pos1,self.pos2)
-                    print("move white king")
+                    print("Moved white king.")
             elif self.pos1[1] == self.pos2[1] + 1:
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move white king")
+                print("Moved white king.")
         elif self.sq1[0] == "b" and self.sq2[0] != "b":
             if self.pos1[0] == self.pos2[0] and self.sq2[0] != "w":
                 if self.pos1[1] == self.pos2[1] + 2 or self.pos1[1] == self.pos2[1] + 1:
                     self.boardclass.moveto(self.pos1,self.pos2)
-                    print("move black king")
+                    print("Moved black king.")
             elif self.pos1[1] == self.pos2[1] + 1:
                 self.boardclass.moveto(self.pos1,self.pos2)
-                print("move black king")
+                print("Moved black king.")
        
 
         elif abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]): '''
