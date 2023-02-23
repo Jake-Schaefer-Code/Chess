@@ -143,13 +143,22 @@ class Movement:
                 print("move black knight") # Printing a message to indicate that the move has been made
                 
     def moveB(self):
-        if abs(self.pos1[0] - self.pos2[0]) == abs(self.pos1[1] - self.pos2[1]): # Checking if the bishop is moving diagonally 
-            if self.sq1[0] == "w" and self.sq2[0] != "w": # Checking if the bishop's starting square is white and the ending square is not white
-                self.boardclass.moveto(self.pos1, self.pos2) # Moving the bishop piece to the destination square
-                print("move white bishop") # Printing a message indicating that the white bishop was moved
-            elif self.sq1[0] == "b" and self.sq2[0] != "b": # Checking if the bishop's starting square is black and the ending square is not black
-                self.boardclass.moveto(self.pos1, self.pos2) # Moving the bishop piece to the destination square
-                print("move black bishop") # Printing a message indicating that the black bishop was moved
+        # Below: Calculating the change in x and y positions, assigning variables to these differences
+        dx = self.pos2[0] - self.pos1[0]
+        dy = self.pos2[1] - self.pos1[1]
+        if abs(dx) == abs(dy):  # Checking if the move is diagonal
+                # Below: Initializing variables for checking if there are any pieces in between
+                blocked = False
+                steps = abs(dx) - 1
+                x_dir = 1 if dx > 0 else -1
+                y_dir = 1 if dy > 0 else -1
+                for step in range(steps): # Checking if there are any pieces in between
+                    x = self.pos1[0] + x_dir * (step + 1)
+                    y = self.pos1[1] + y_dir * (step + 1)
+                    if self.board[y][x] != "--":
+                        blocked = True
+                if blocked != True: # If there are no pieces in between, permitting player to move the bishop
+                    self.boardclass.moveto(self.pos1,self.pos2)
                 
     def moveR(self):
         dx = self.pos2[0] - self.pos1[0]
