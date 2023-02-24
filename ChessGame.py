@@ -5,12 +5,13 @@ import sys
 piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
              "wkh", "wqh", "wrh", "wbh", "wnh", "wph", "bkh", "bqh", "brh", "bbh", "bnh", "bph"]
 piecedic = {}
-highlightdic = {}
 squaredic = {}
 column = {'a':0,'b':1,'c':2,'d':3,'e':4,'f':5,'g':6,'h':7}
 Width = 512
 Height = 512
 turns = []
+moves = []
+possible_moves = []
 
 class Board:
     def __init__(self, screen):
@@ -41,8 +42,27 @@ class Board:
             print("Captured!")
         else:
             print("Successful move.")
-        
+        moves.append([pos1,pos2, piece1, piece2])
+        print(moves)
 
+    def makeButton(self, cur, rect):
+            if rect.collidepoint(cur):
+                pos1 = pygame.mouse.get_pos()[0]//(Width//8)
+                pos2 = pygame.mouse.get_pos()[1]//(Height//8)
+                return (pos1,pos2)
+
+    def undo(self):
+        if len(moves) != 0:
+            pos1 = moves[-1][0]
+            pos2 = moves[-1][1]
+            piece1 = moves[-1][2]
+            piece2 = moves[-1][3]
+            self.board[pos1[1]][pos1[0]] = piece1
+            self.board[pos2[1]][pos2[0]] = piece2
+            moves.pop()
+
+
+class drawing(Board):
     def draw(self):
         for i in range(8):
             for j in range(8):
@@ -53,13 +73,7 @@ class Board:
                 else:
                     self.color = (245,198,156)
                 pygame.draw.rect(self.screen, self.color, pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8))
-                squaredic[(j,i)] = pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8)
-                
-    def makeButton(self, cur, rect):
-            if rect.collidepoint(cur):
-                pos1 = pygame.mouse.get_pos()[0]//(Width//8)
-                pos2 = pygame.mouse.get_pos()[1]//(Height//8)
-                return (pos1,pos2)
+                squaredic[(j,i)] = pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8) #dont need maybe?
 
     def draw_piece(self): #checks each square on the board for a piece and draws it if there is one
         for i in range(8):
@@ -68,11 +82,11 @@ class Board:
                 if piece != "--":
                     self.screen.blit(pygame.transform.scale(piecedic[piece],(Width//8,Height//8)), pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8))
     
-    def highlight(self, piece, pos):
+    def highlight(self, pos):
         self.board[pos[1]][pos[0]] += "h"
-        #self.screen.blit(pygame.transform.scale(piecedic[piece],(Width//8,Height//8)), pygame.Rect((Width//8)*pos[0],(Height//8)*pos[1],Width//8,Height//8))
     def unhighlight(self, pos):
         self.board[pos[1]][pos[0]] = self.board[pos[1]][pos[0]][:2]
+
 
 
 class Movement:
@@ -213,17 +227,17 @@ class Movement:
             elif self.sq1[0] == "b" and self.sq2[0] != "b":
                 self.boardclass.moveto(self.pos1, self.pos2)
                 print("move black king")
+
+
         
 def main():
-    
     pygame.init()
     pygame.display.init()
     screen = pygame.display.set_mode((Width,Height))
     screen.fill(pygame.Color("white"))
-    board1 = Board(screen)
+    board1 = drawing(screen)
     for piece in piecelist:
         piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
-        #highlightdic[piece + "h"] = pygame.image.load("highlighted/"+piece+"h.PNG")
     square = pygame.Rect((0,0), (512,512))
     
     sq1 = None
@@ -232,7 +246,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
                     selectedsq = board1.makeButton(event.pos, square)
 
@@ -247,7 +261,7 @@ def main():
                         sq1 = selectedsq
                         piece1 = board1.get_square(clicks[0])
                         if len(clicks) == 1:
-                            board1.highlight(piece1, selectedsq)
+                            board1.highlight(selectedsq)
                     print(clicks)
 
                     if len(clicks) == 2:
@@ -273,6 +287,13 @@ def main():
                         clicks = []
                     #elif len(clicks) > 2:
                         #clicks = []
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z:
+                    board1.undo()
+
+
+
+
 
 
         pygame.display.set_caption("Chess")
