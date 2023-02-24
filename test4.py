@@ -67,7 +67,6 @@ class Board:
 
         
 
-
 class drawing(Board):
     def draw(self):
         for i in range(8):
@@ -93,11 +92,13 @@ class drawing(Board):
     def unhighlight(self, pos):
         self.board[pos[1]][pos[0]] = self.board[pos[1]][pos[0]][:2]
 
+
+
 class constraints:
     def __init__(self, screen):
         self.screen = screen
-    def onboard(self):
-        pass
+    def onboard(self,pos):
+        return (pos[0] >= 0 and pos[0] <= 7) and (pos[1] >= 0 and pos[1] <= 7)
 
     def samecolor(self, pos1, pos2, board):
         return board[pos1[1]][pos1[0]][0] == board[pos2[1]][pos2[0]][0]
@@ -114,16 +115,34 @@ class constraints:
             x_dir = 1 if dx > 0 else -1
             y_dir = 1 if dy > 0 else -1
             for step in range(steps):
-                x = pos1[0] + x_dir * (step + 1)
-                y = pos1[1] + y_dir * (step + 1)
+                x = pos1[0] + x_dir * (step +1)
+                y = pos1[1] + y_dir * (step +1)
                 if board[y][x] != "--":
                     blocked = True
             return blocked
     
-    def blocked_straight(self, pos):
-        pass
-    
-
+    def blocked_straight(self, pos1, pos2, board):
+        dx = pos2[0] - pos1[0]
+        dy = pos1[1] - pos2[1]
+        blocked = False
+        if dx == 0:
+            y_dir = 1 if dy > 0 else -1
+            steps = abs(dy) - 1
+            for step in range(steps):
+                y = pos2[1] + y_dir * (step + 1)
+                x = pos1[0]
+                if board[y][x] != "--":
+                    blocked = True
+        elif dy == 0:
+            x_dir = 1 if dx > 0 else -1
+            steps = abs(dx) - 1
+            for step in range(steps):
+                x = pos1[0] + x_dir * (step + 1)
+                y = pos1[1]
+                if board[y][x] != "--":
+                    blocked = True
+        return blocked
+   
 
 
 class Movement:
@@ -138,12 +157,13 @@ class Movement:
         self.Pmoves = []
         self.Nmoves = []
         self.Bmoves = []
+        self.c = constraints(self.screen)
 
         
         
     def moveP(self):
         firstmove = False
-        c = constraints(self.screen)
+        
 
         if self.sq1[0] == "w":
             if self.pos1[1] == 6:
@@ -185,11 +205,12 @@ class Movement:
 
     def moveN(self):
         
-        c = constraints(self.screen)
+        
+        
         maybemoves = [[x,y] for y in range(8) if abs(self.pos1[1]-y) == 2 for x in range(8) if abs(self.pos1[0]-x) == 1] + [
             [x,y] for y in range(8) if abs(self.pos1[1]-y) == 1 for x in range(8) if abs(self.pos1[0]-x) == 2]
         for move in maybemoves:
-            if not c.samecolor(self.pos1, move, self.board):
+            if not self.c.samecolor(self.pos1, move, self.board):
                 self.Nmoves.append(move)
                 print(self.Nmoves)
 
@@ -201,45 +222,38 @@ class Movement:
 
 
     def moveB(self):
-        c = constraints(self.screen)
-        for i in range(8):
-            for j in range(8):
-                if not c.blocked_diag(self.pos1, (i,j), self.board):
-                    self.Bmoves.append((i,j))
-
+        #while not blocked:
+            #check nearest diagonal space for piece
+            #if no piece, append square
+            #repeat for each direction
+        directions = [(1,1),(1,-1),(-1,-1),(-1,1)]
+        for dir in directions:
+            blocked = False
+            step = 0
+            onboard = True
+            while not blocked and onboard:
+                step +=1
+                x = self.pos1[0] + dir[0] * (step)
+                y = self.pos1[1] + dir[1] * (step)
+                onboard = self.c.onboard((x,y))
+                if onboard:
+                    if self.board[y][x] != "--":
+                        blocked = True
+                    else:
+                        self.Bmoves.append((x,y))
+                    
         
         print(self.Bmoves)
         
-        if not c.blocked_diag(self.pos1, self.pos2, self.board):
+        if not self.c.blocked_diag(self.pos1, self.pos2, self.board):
             self.boardclass.moveto(self.pos1,self.pos2)
 
             
     def moveR(self):
-        c = constraints(self.screen)
-        dx = self.pos2[0] - self.pos1[0]
-        dy = self.pos1[1] - self.pos2[1]
-        blocked = False
-        if dx == 0:
-            y_dir = 1 if dy > 0 else -1
-            steps = abs(dy) - 1
-            for step in range(steps):
-                y = self.pos2[1] + y_dir * (step + 1)
-                x = self.pos1[0]
-                
-                if c.blocked((x,y), self.board):
-                    blocked = True
-            if blocked != True:
-                self.boardclass.moveto(self.pos1,self.pos2)
-        elif dy == 0:
-            x_dir = 1 if dx > 0 else -1
-            steps = abs(dx) - 1
-            for step in range(steps):
-                x = self.pos1[0] + x_dir * (step + 1)
-                y = self.pos1[1]
-                if c.blocked((x,y), self.board):
-                    blocked = True
-            if blocked != True:
-                self.boardclass.moveto(self.pos1,self.pos2)
+        
+        if not self.c.blocked_straight(self.pos1, self.pos2, self.board):
+            self.boardclass.moveto(self.pos1,self.pos2)
+        
 
     def moveQ(self):
         if self.pos1[0] == self.pos2[0] or self.pos1[1] == self.pos2[1]:
@@ -253,8 +267,6 @@ class Movement:
             self.boardclass.moveto(self.pos1, self.pos2)
 
     
-
-
         
 def main():
     pygame.init()
