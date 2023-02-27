@@ -23,24 +23,30 @@ class Board:
         return self.board[pos[1]][pos[0]]
 
 
-
 class Pawn:
-    def __init__(self, color, rank, file):
+    def __init__(self, color, file, rank):
         self.color = color
         self.rank = rank
         self.file = file
 
-    def legalmoves(self):
+    def legalmoves(self, board):
+        firstmove = False
+        potmoves = []
+        if (self.color == "w" and self.rank == 6) or (self.color == "b" and self.rank == 1):
+            firstmove = True
+        if firstmove == True and board[self.file+2][self.rank] == None:
+            potmoves.append((self.file+2, self.rank))
         
+
+
+        
+        
+
+
+    def check_legalmove(self, pos):
         pass
 
 
-    def check_legalmove(self):
-        pass
-
-
-    def draw(self):
-        pass
 
 
 def main():
