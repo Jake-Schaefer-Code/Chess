@@ -44,9 +44,10 @@ class Board:
                 return (pos1,pos2)
     
     def moveTo(self, piece, pos1, pos2):
-        self.board[pos1[0]][pos1[1]] = []
-        self.board[pos2[0]][pos2[1]] = [piece]
-        print(self.board)
+        print(self.board[pos1[1]][pos1[0]])
+        self.board[pos1[1]][pos1[0]] = []
+        self.board[pos2[1]][pos2[0]] = [piece]
+        
         turns.append((pos1,pos2))
 
 
@@ -83,7 +84,7 @@ class Pawn:
         if pos2 in self.potmoves:
             self = Pawn(self.color, pos2[0], pos2[1])
             boardclass.moveTo(self, pos1, pos2)
-            #print(self)
+           
 
     def draw(self,screen):
         self.screen = screen
@@ -96,8 +97,15 @@ def inrange(file,rank):
     return (file >= 0 and file <= 7) and (rank >= 0 and rank <= 7)
         
 def samecolor(file1,rank1,file2,rank2,board):
-    return board[file1][rank1][0].color == board[file2][rank2][0].color
+    print(board[rank1][file1][0].color,board[rank2][file2][0].color)
+    return board[rank1][file1][0].color == board[rank2][file2][0].color
+    
 
+
+def draw_piece(screen,piece):
+    if piece != []:
+        image = piece[0].imagename
+        screen.blit(pygame.transform.scale(piecedic[image],(Width//8,Height//8)), pygame.Rect((Width//8)*piece[0].file,(Height//8)*piece[0].rank,Width//8,Height//8))
 
 
 def main():
@@ -138,9 +146,14 @@ def main():
                         elif len(turns)%2==0 and piece1.color == "w": #white's move - should probably create a variable for white vs black turns that updates
                             piece1.legalmoves(board1.board)
                             piece1.check_legalmoves(clicks[0], clicks[1], board1)
-                            print(board1.board)
+                            print(clicks[0], clicks[1])
+                            clicks = []
+                        
                         elif len(turns)%2==1 and piece1.color == "b":
-                            pass
+                            piece1.legalmoves(board1.board)
+                            piece1.check_legalmoves(clicks[0], clicks[1], board1)
+                            print(clicks[0], clicks[1])
+                            clicks = []
                         
                 
 
@@ -152,8 +165,7 @@ def main():
         board1.draw()
         for rank in board1.board:
             for p in rank:
-                if p != []:
-                    p[0].draw(screen)
+                draw_piece(screen,p)
         pygame.display.update()
 
 
