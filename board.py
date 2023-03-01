@@ -17,6 +17,7 @@ class Board:
     def __init__(self, screen):
         self.screen = screen
         self.color = None
+        self.curteam = "w"
         self.board = [[Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0)] for _ in range(8)]
         for rank in range(8):
             for file in range(8):
@@ -59,9 +60,8 @@ class Board:
 
     def callmove(self, piece, rank, file):
         move = Movetypes(piece, rank, file, self.board)
-        print(rank, file)
         if isinstance(piece, Pawn):
-            move.p_moves()
+            return move.p_moves()
         if isinstance(piece, Knight):
             print("Knight")
         if isinstance(piece, Bishop):
@@ -72,7 +72,9 @@ class Board:
             print("Queen")
         if isinstance(piece, King):
             print("King")
-
+    
+    def nextturn(self):
+        self.curteam = "b" if self.curteam == "w" else "w"
 
 
 
@@ -103,16 +105,24 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
         if (self.piece.color == "w" and self.rank == 6) or (self.piece.color == "b" and self.rank == 1):
             firstmove = True
         if self.piece.color == "w":
-            if firstmove == True and self.board[self.rank-2][self.file].piece == None:
-                self.potmoves.append((self.file, self.rank-2))
             if self.board[self.rank-1][self.file].piece == None:
                 self.potmoves.append((self.file, self.rank-1))
-                
+            if firstmove == True and self.board[self.rank-2][self.file].piece == None:
+                self.potmoves.append((self.file, self.rank-2))
+                   
         elif self.piece.color == "b":
-            if firstmove == True and self.board[self.rank+2][self.file].piece == None:
+            if firstmove == True and self.board[self.file][self.rank-2].piece == None:
                 self.potmoves.append((self.file, self.rank+2))
-            if self.board[self.rank+1][self.file].piece == None:
+            if self.board[self.file][self.rank-1].piece == None:
                 self.potmoves.append((self.file, self.rank+1))
+        
+        for d in dir:
+            if self.board[self.rank+d[1]][self.file+d[0]].piece != None:
+                if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
+                    self.potmoves.append((self.file+d[0],self.rank+d[1]))
+
+        return self.potmoves
+
 
     def straight_move(self, dir): #this works for diagonals and straight lines
         smoves = [] #temporary list for straight moves - will make a move class or a total moves list in future
@@ -150,39 +160,50 @@ def main():
     for piece in piecelist:
         piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
     square = pygame.Rect((0,0), (512,512))
-    sq1 = None
+    startsq, piece1, piecemoves = None, None, None
     clicks = []
-    piece1 = None
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
+                   
+                    #We should probably go over this again we might be able to simplify
+                    
                     selectedsq = board1.makeButton(event.pos, square)
-                    square1 = board1.get_square(selectedsq)
-                    selectedpiece = square1.piece
-                    if (len(clicks) == 0 and square1.emptytile()):
-                        clicks = []
-                    elif sq1 == selectedsq and len(clicks) == 1 and selectedpiece != None:
-                        selectedpiece.imagename = selectedpiece.imagename[:2]
-                        clicks = []
-                        sq1 = None
-                    else:
-                        clicks.append(selectedsq)
-                        if len(clicks) == 1 and selectedpiece != None:
+                    selectedpiece = board1.get_square(selectedsq).piece
+                    if selectedpiece != None:
+                        if len(clicks) == 0 and selectedpiece.color == board1.curteam:
+                            clicks.append(selectedsq)
+                            startsq = selectedsq
+                        elif len(clicks) == 1 and startsq == selectedsq:
+                            selectedpiece.imagename = selectedpiece.imagename[:2]
+                            clicks = []
+                            startsq = None
+                        elif len(clicks) == 1 and selectedpiece.color != board1.curteam:
+                            clicks.append(selectedsq)
+
+                        if len(clicks) == 1 and selectedpiece.color == board1.curteam:
                             piece1 = selectedpiece
                             selectedpiece.imagename = selectedpiece.imagename + "h"
+                            piecemoves = board1.callmove(piece1, clicks[0][1], clicks[0][0])
+                            print(piecemoves)
+                    elif selectedpiece == None and len(clicks)==0:
+                        clicks = []
+                    
+                    else:
+                        clicks.append(selectedsq)
+                        startsq = selectedsq
                     
                     if len(clicks) == 2 and piece1 != None:
                         piece1.imagename = piece1.imagename[:2]
-                        if len(turns)%2==0 and piece1.color == "w":
+                        if piece1.color == board1.curteam and clicks[1] in piecemoves:
                             board1.moveTo(piece1, clicks[0],clicks[1])
-                            board1.callmove(piece1, clicks[0][1], clicks[0][0])
-                        elif len(turns)%2==1 and piece1.color == "b":
-                            board1.moveTo(piece1, clicks[0],clicks[1])
-                            board1.callmove(piece1, clicks[0][1], clicks[0][0])
+                            board1.nextturn()
+                            
                         clicks = []
+                    #print(clicks)
         
         pygame.display.set_caption("Chess")
         boardimage = pygame.image.load("WhiteBackground.jpeg")
