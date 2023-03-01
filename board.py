@@ -57,9 +57,11 @@ class Board:
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         turns.append((pos1,pos2))
 
-    def callmove(self, piece):
+    def callmove(self, piece, rank, file):
+        move = Movetypes(piece, rank, file, self.board)
+        print(rank, file)
         if isinstance(piece, Pawn):
-            print("Pawn")
+            move.p_moves()
         if isinstance(piece, Knight):
             print("Knight")
         if isinstance(piece, Bishop):
@@ -101,15 +103,15 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
         if (self.piece.color == "w" and self.rank == 6) or (self.piece.color == "b" and self.rank == 1):
             firstmove = True
         if self.piece.color == "w":
-            if firstmove == True and self.board[self.rank-2][self.file] == []:
+            if firstmove == True and self.board[self.rank-2][self.file].piece == None:
                 self.potmoves.append((self.file, self.rank-2))
-            if self.board[self.rank-1][self.file] == []:
+            if self.board[self.rank-1][self.file].piece == None:
                 self.potmoves.append((self.file, self.rank-1))
                 
         elif self.piece.color == "b":
-            if firstmove == True and self.board[self.rank+2][self.file] == []:
+            if firstmove == True and self.board[self.rank+2][self.file].piece == None:
                 self.potmoves.append((self.file, self.rank+2))
-            if self.board[self.rank+1][self.file] == []:
+            if self.board[self.rank+1][self.file].piece == None:
                 self.potmoves.append((self.file, self.rank+1))
 
     def straight_move(self, dir): #this works for diagonals and straight lines
@@ -176,10 +178,10 @@ def main():
                         piece1.imagename = piece1.imagename[:2]
                         if len(turns)%2==0 and piece1.color == "w":
                             board1.moveTo(piece1, clicks[0],clicks[1])
-                            board1.callmove(piece1)
+                            board1.callmove(piece1, clicks[0][1], clicks[0][0])
                         elif len(turns)%2==1 and piece1.color == "b":
                             board1.moveTo(piece1, clicks[0],clicks[1])
-                            board1.callmove(piece1)
+                            board1.callmove(piece1, clicks[0][1], clicks[0][0])
                         clicks = []
         
         pygame.display.set_caption("Chess")
