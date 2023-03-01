@@ -31,7 +31,6 @@ class Board:
                          Tile(4,7,King("w")), Tile(5,7,Bishop("w")), Tile(6,7,Knight("w")), Tile(7,7,Rook("w"))]
         
 
-
     def get_square(self, pos):
         return self.board[pos[1]][pos[0]]
     
@@ -58,6 +57,19 @@ class Board:
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         turns.append((pos1,pos2))
 
+    def callmove(self, piece):
+        if isinstance(piece, Pawn):
+            print("Pawn")
+        if isinstance(piece, Knight):
+            print("Knight")
+        if isinstance(piece, Bishop):
+            print("Bishop")
+        if isinstance(piece, Rook):
+            print("Rook")
+        if isinstance(piece, Queen):
+            print("Queen")
+        if isinstance(piece, King):
+            print("King")
 
 
 
@@ -164,9 +176,10 @@ def main():
                         piece1.imagename = piece1.imagename[:2]
                         if len(turns)%2==0 and piece1.color == "w":
                             board1.moveTo(piece1, clicks[0],clicks[1])
+                            board1.callmove(piece1)
                         elif len(turns)%2==1 and piece1.color == "b":
                             board1.moveTo(piece1, clicks[0],clicks[1])
-                        
+                            board1.callmove(piece1)
                         clicks = []
         
         pygame.display.set_caption("Chess")
