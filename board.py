@@ -55,7 +55,7 @@ class Board:
     
     def moveTo(self, piece, pos1, pos2):
         self.board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
-        self.board[pos2[1]][pos2[0]] = piece
+        self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         turns.append((pos1,pos2))
 
     def movepiece(self, piece):
@@ -144,9 +144,12 @@ def main():
                             clicks = []
                         elif len(turns)%2==0 and piece1.piece.color == "w": #white's move - should probably create a variable for white vs black turns that updates
                             print(clicks[0], clicks[1])
+                            board1.moveTo(piece1.piece, clicks[0],clicks[1])
+
                         
                         elif len(turns)%2==1 and piece1.piece.color == "b":
                             print(clicks[0], clicks[1])
+
                             
                         clicks = []
                         
