@@ -33,7 +33,6 @@ class Board:
 
 
     def get_square(self, pos):
-        #print(self.board[pos[1]][pos[0]].piece)
         return self.board[pos[1]][pos[0]]
     
     def draw(self):
@@ -59,8 +58,8 @@ class Board:
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         turns.append((pos1,pos2))
 
-    def movepiece(self, piece):
-        pass
+
+
 
 
     
@@ -71,13 +70,36 @@ def draw_piece(screen,tile):
 
 
 
-class Movetypes:
+class Movetypes: #maybe put these in the board class? this may not be optimal
     def __init__(self, piece, rank, file, board):
         self.piece = piece
         self.rank = rank
         self.file = file
         self.board = board
     
+    def p_moves(self):
+        firstmove = False
+        self.potmoves = []
+        dir = []
+        if self.piece.color == "w":
+            dir = [(1,-1),(-1,-1)]
+        elif self.piece.color == "b":
+            dir = [(1,1),(-1,1)]
+        
+        if (self.piece.color == "w" and self.rank == 6) or (self.piece.color == "b" and self.rank == 1):
+            firstmove = True
+        if self.piece.color == "w":
+            if firstmove == True and self.board[self.rank-2][self.file] == []:
+                self.potmoves.append((self.file, self.rank-2))
+            if self.board[self.rank-1][self.file] == []:
+                self.potmoves.append((self.file, self.rank-1))
+                
+        elif self.piece.color == "b":
+            if firstmove == True and self.board[self.rank+2][self.file] == []:
+                self.potmoves.append((self.file, self.rank+2))
+            if self.board[self.rank+1][self.file] == []:
+                self.potmoves.append((self.file, self.rank+1))
+
     def straight_move(self, dir): #this works for diagonals and straight lines
         smoves = [] #temporary list for straight moves - will make a move class or a total moves list in future
         for d in dir:
@@ -98,6 +120,7 @@ class Movetypes:
                     break
                 rank_move = rank_move + rank_dir
                 file_move = file_move + file_dir
+        
 
 
 
@@ -136,18 +159,15 @@ def main():
                         if len(clicks) == 1 and selectedpiece != None:
                             piece1 = selectedpiece
                             selectedpiece.imagename = selectedpiece.imagename + "h"
+                    
                     if len(clicks) == 2 and piece1 != None:
                         piece1.imagename = piece1.imagename[:2]
                         if len(turns)%2==0 and piece1.color == "w":
                             board1.moveTo(piece1, clicks[0],clicks[1])
                         elif len(turns)%2==1 and piece1.color == "b":
                             board1.moveTo(piece1, clicks[0],clicks[1])
-
+                        
                         clicks = []
-
-                    
-
-
         
         pygame.display.set_caption("Chess")
         boardimage = pygame.image.load("WhiteBackground.jpeg")
@@ -157,7 +177,5 @@ def main():
             for p in rank:
                 draw_piece(screen,p)
         pygame.display.update()
-
-
 
 main()
