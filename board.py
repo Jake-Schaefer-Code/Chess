@@ -33,6 +33,7 @@ class Board:
 
 
     def get_square(self, pos):
+        #print(self.board[pos[1]][pos[0]].piece)
         return self.board[pos[1]][pos[0]]
     
     def draw(self):
@@ -60,8 +61,6 @@ class Board:
 
     def movepiece(self, piece):
         pass
-    
-
 
 
     
@@ -106,6 +105,7 @@ class Movetypes:
 
 
 def main():
+    
     pygame.init()
     pygame.display.init()
     screen = pygame.display.set_mode((Width,Height))
@@ -115,6 +115,7 @@ def main():
     square = pygame.Rect((0,0), (512,512))
     sq1 = None
     clicks = []
+    piece1 = None
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -122,38 +123,29 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
                     selectedsq = board1.makeButton(event.pos, square)
-                    
-                    if (len(clicks) == 0 and board1.get_square(selectedsq) == []):
+                    square1 = board1.get_square(selectedsq)
+                    selectedpiece = square1.piece
+                    if (len(clicks) == 0 and square1.emptytile()):
                         clicks = []
-                    elif sq1 == selectedsq and len(clicks) == 1:
-                        #print("unhighlight")
+                    elif sq1 == selectedsq and len(clicks) == 1 and selectedpiece != None:
+                        selectedpiece.imagename = selectedpiece.imagename[:2]
                         clicks = []
                         sq1 = None
                     else:
                         clicks.append(selectedsq)
-                        sq1 = selectedsq
-                        piece1 = board1.get_square(clicks[0])
-                        if len(clicks) == 1:
-                            #print("highlight")
-                            pass
-                    print(clicks)
-                    if len(clicks) == 2:
-                        #print("unhighlight")
-                        piece1 = board1.get_square(clicks[0])
-                        if piece1 == None:
-                            clicks = []
-                        elif len(turns)%2==0 and piece1.piece.color == "w": #white's move - should probably create a variable for white vs black turns that updates
-                            print(clicks[0], clicks[1])
-                            board1.moveTo(piece1.piece, clicks[0],clicks[1])
+                        if len(clicks) == 1 and selectedpiece != None:
+                            piece1 = selectedpiece
+                            selectedpiece.imagename = selectedpiece.imagename + "h"
+                    if len(clicks) == 2 and piece1 != None:
+                        piece1.imagename = piece1.imagename[:2]
+                        if len(turns)%2==0 and piece1.color == "w":
+                            board1.moveTo(piece1, clicks[0],clicks[1])
+                        elif len(turns)%2==1 and piece1.color == "b":
+                            board1.moveTo(piece1, clicks[0],clicks[1])
 
-                        
-                        elif len(turns)%2==1 and piece1.piece.color == "b":
-                            print(clicks[0], clicks[1])
-
-                            
                         clicks = []
-                        
-                
+
+                    
 
 
         
