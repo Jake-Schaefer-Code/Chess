@@ -63,15 +63,15 @@ class Board:
         if isinstance(piece, Pawn):
             return move.p_moves()
         if isinstance(piece, Knight):
-            print("Knight")
+            return move.n_moves()
         if isinstance(piece, Bishop):
-            print("Bishop")
+            return move.b_moves()
         if isinstance(piece, Rook):
-            print("Rook")
+            return move.r_moves()
         if isinstance(piece, Queen):
-            print("Queen")
+            return move.q_moves()
         if isinstance(piece, King):
-            print("King")
+            return move.k_moves()
     
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
@@ -121,6 +121,26 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
                 if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
                     self.potmoves.append((self.file+d[0],self.rank+d[1]))
 
+        return self.potmoves
+    
+    def n_moves(self):
+        self.potmoves = []
+        return self.potmoves
+    
+    def b_moves(self):
+        self.potmoves = []
+        return self.potmoves
+    
+    def r_moves(self):
+        self.potmoves = []
+        return self.potmoves
+    
+    def q_moves(self):
+        self.potmoves = []
+        return self.potmoves
+    
+    def k_moves(self):
+        self.potmoves = []
         return self.potmoves
 
 
