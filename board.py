@@ -58,6 +58,11 @@ class Board:
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         turns.append((pos1,pos2))
 
+    def testmove(self, piece, pos1, pos2, board):
+        board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
+        board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
+        return board
+
     def callmove(self, piece, rank, file):
         move = Movetypes(piece, rank, file, self.board)
         if isinstance(piece, Pawn):
@@ -92,28 +97,32 @@ class Board:
                         
         return(self.all_moves_white, self.all_moves_black)
     
-    def incheck(self, king, kingpos):
-        king_moves = self.callmove(king, kingpos[1],kingpos[0])
+    def incheck(self, piece, pos1, pos2):
+        testboard = self.board.copy()
+        self.testmove(piece, pos1, pos2, testboard)
+        
+
+
         moves = []
         if self.curteam == "w":
             moves = self.get_all_moves()[1]
         elif self.curteam == "b":
             moves = self.get_all_moves()[0]
-        if kingpos in moves:
-            print("in check")
-        if type(king_moves) is list:
-            while True:
-                for m in king_moves:
-                    if m not in moves:
-                        break
-                    elif m == king_moves[-1] and m in moves:
-                        print("checkmate")
-                        break
-
-
-        
-        
-        
+        for m in moves:
+            itertile = self.board[m[1]][m[0]]
+            if isinstance(itertile.piece, King) and itertile.piece.color != self.curteam:
+                print("in check")
+        #if type(king_moves) is list:
+            #if kingpos in moves:
+                #while True:
+                    #for m in king_moves:
+                        #if m not in moves:
+                            #break
+                        #elif m == king_moves[-1] and m in moves:
+                            #print("checkmate")
+                            #break
+        if (self.curteam == "w" and self.get_all_moves()[0] == []) or (self.curteam == "b" and self.get_all_moves()[1] == []):
+            print("stalemate")
 
 
     def nextturn(self):
@@ -195,9 +204,17 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
         return self.potmoves
     
     def k_moves(self):
-        #self.potmoves = []
-        #return self.potmoves
-        return []
+        dir = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(-1,-1),(1,-1)]
+        for d in dir:
+            rank_dir, file_dir = d
+            rank_move = self.rank + rank_dir
+            file_move = self.file + file_dir
+            if inrange(rank_move, file_move):
+                itertile = Tile(rank_move, file_move, self.board[rank_move][file_move].piece)
+                if itertile.emptytile() or not itertile.has_ally(self.piece.color):
+                    self.potmoves.append((file_move, rank_move))
+        
+        return self.potmoves
 
     def straight_move(self, dir): #this works for diagonals and straight lines
         smoves = [] #temporary list for straight moves - will make a move class or a total moves list in future
