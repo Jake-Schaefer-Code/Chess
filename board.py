@@ -59,8 +59,6 @@ class Board:
         turns.append((pos1,pos2))
 
     def callmove(self, piece, rank, file):
-        #print(rank)
-        #print(file)
         move = Movetypes(piece, rank, file, self.board)
         if isinstance(piece, Pawn):
             return move.p_moves()
@@ -76,7 +74,8 @@ class Board:
             return move.k_moves()
     
     def get_all_moves(self):
-        self.all_moves = []
+        self.all_moves_white = []
+        self.all_moves_black = []
         self.list1 = []
         for rank in self.board:
             for file in rank:
@@ -84,13 +83,42 @@ class Board:
                     if file.piece.color == self.curteam:
                         self.list1 = self.callmove(file.piece, file.rank, file.file)
                         if type(self.list1) is list:
-                            self.all_moves += self.list1
+                            self.all_moves_white += self.list1
+                    if file.piece.color != self.curteam:
+                        self.list1 = self.callmove(file.piece, file.rank, file.file)
+                        if type(self.list1) is list:
+                            self.all_moves_black += self.list1
 
                         
-        return(self.all_moves)
+        return(self.all_moves_white, self.all_moves_black)
+    
+    def incheck(self, king, kingpos):
+        king_moves = self.callmove(king, kingpos[1],kingpos[0])
+        moves = []
+        if self.curteam == "w":
+            moves = self.get_all_moves()[1]
+        elif self.curteam == "b":
+            moves = self.get_all_moves()[0]
+        if kingpos in moves:
+            print("in check")
+        if type(king_moves) is list:
+            while True:
+                for m in king_moves:
+                    if m not in moves:
+                        break
+                    elif m == king_moves[-1] and m in moves:
+                        print("checkmate")
+                        break
+
+
+        
+        
+        
+
 
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
+
 
 
 
