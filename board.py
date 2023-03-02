@@ -129,14 +129,20 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
     
     def b_moves(self):
         self.potmoves = []
+        dir = [(1,1),(-1,1),(-1,-1),(1,-1)]
+        self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def r_moves(self):
         self.potmoves = []
+        dir = [(1,0),(-1,0),(0,1),(0,-1)]
+        self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def q_moves(self):
         self.potmoves = []
+        dir = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(-1,-1),(1,-1)]
+        self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def k_moves(self):
@@ -153,17 +159,21 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
 
             while True:
                 if inrange(rank_move, file_move):
-                    if Tile(rank_move, file_move, self.board[rank_move][file_move]).emptytile: #maybe put this in board class so can just call self.board[rank][file].emptytile
+                    itertile = Tile(rank_move, file_move, self.board[rank_move][file_move].piece)
+
+                    if itertile.emptytile(): #maybe put this in board class so can just call self.board[rank][file].emptytile
                         smoves.append((file_move,rank_move)) 
-                    elif not Tile(rank_move, file_move, self.board[rank_move][file_move]).has_ally:
-                        smoves.append((file_move,rank_move)) 
-                        break
-                    elif Tile(rank_move, file_move, self.board[rank_move][file_move]).has_ally:
-                        break
+                    elif not itertile.emptytile():
+                        if not itertile.has_ally(self.piece.color):
+                            smoves.append((file_move,rank_move)) 
+                            break
+                        elif itertile.has_ally(self.piece.color):
+                            break
                 else:
                     break
                 rank_move = rank_move + rank_dir
                 file_move = file_move + file_dir
+        return smoves
         
 
 
