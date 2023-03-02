@@ -125,6 +125,12 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
     
     def n_moves(self):
         self.potmoves = []
+        moves = [(x,y) for y in range(8) if abs(self.rank-y) == 2 for x in range(8) if abs(self.file-x) == 1] + [
+            (x,y) for y in range(8) if abs(self.rank-y) == 1 for x in range(8) if abs(self.file-x) == 2]
+        for x,y in moves:
+            itertile = Tile(x, y, self.board[y][x].piece)
+            if itertile.emptytile() or not itertile.has_ally(self.piece.color):
+                self.potmoves.append((x,y))
         return self.potmoves
     
     def b_moves(self):
