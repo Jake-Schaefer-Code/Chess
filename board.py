@@ -59,6 +59,8 @@ class Board:
         turns.append((pos1,pos2))
 
     def callmove(self, piece, rank, file):
+        #print(rank)
+        #print(file)
         move = Movetypes(piece, rank, file, self.board)
         if isinstance(piece, Pawn):
             return move.p_moves()
@@ -73,6 +75,20 @@ class Board:
         if isinstance(piece, King):
             return move.k_moves()
     
+    def get_all_moves(self):
+        self.all_moves = []
+        self.list1 = []
+        for rank in self.board:
+            for file in rank:
+                if file.piece != None:
+                    if file.piece.color == self.curteam:
+                        self.list1 = self.callmove(file.piece, file.rank, file.file)
+                        if type(self.list1) is list:
+                            self.all_moves += self.list1
+
+                        
+        return(self.all_moves)
+
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
 
@@ -92,10 +108,11 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
         self.rank = rank
         self.file = file
         self.board = board
+        self.potmoves = []
     
     def p_moves(self):
         firstmove = False
-        self.potmoves = []
+        
         dir = []
         if self.piece.color == "w":
             dir = [(1,-1),(-1,-1)]
@@ -117,14 +134,15 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
                 self.potmoves.append((self.file, self.rank+1))
         
         for d in dir:
-            if self.board[self.rank+d[1]][self.file+d[0]].piece != None:
-                if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
-                    self.potmoves.append((self.file+d[0],self.rank+d[1]))
+            if inrange(self.rank+d[1],self.file+d[0]):
+                if self.board[self.rank+d[1]][self.file+d[0]].piece != None:
+                    if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
+                        self.potmoves.append((self.file+d[0],self.rank+d[1]))
+                
 
         return self.potmoves
     
     def n_moves(self):
-        self.potmoves = []
         moves = [(x,y) for y in range(8) if abs(self.rank-y) == 2 for x in range(8) if abs(self.file-x) == 1] + [
             (x,y) for y in range(8) if abs(self.rank-y) == 1 for x in range(8) if abs(self.file-x) == 2]
         for x,y in moves:
@@ -134,27 +152,24 @@ class Movetypes: #maybe put these in the board class? this may not be optimal
         return self.potmoves
     
     def b_moves(self):
-        self.potmoves = []
         dir = [(1,1),(-1,1),(-1,-1),(1,-1)]
         self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def r_moves(self):
-        self.potmoves = []
         dir = [(1,0),(-1,0),(0,1),(0,-1)]
         self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def q_moves(self):
-        self.potmoves = []
         dir = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(-1,-1),(1,-1)]
         self.potmoves+=self.straight_move(dir)
         return self.potmoves
     
     def k_moves(self):
-        self.potmoves = []
-        return self.potmoves
-
+        #self.potmoves = []
+        #return self.potmoves
+        return []
 
     def straight_move(self, dir): #this works for diagonals and straight lines
         smoves = [] #temporary list for straight moves - will make a move class or a total moves list in future
@@ -224,7 +239,10 @@ def main():
                             piece1 = selectedpiece
                             selectedpiece.imagename = selectedpiece.imagename + "h"
                             piecemoves = board1.callmove(piece1, clicks[0][1], clicks[0][0])
+                            allmoves = board1.get_all_moves()
+                            print(allmoves)
                             print(piecemoves)
+
                     elif selectedpiece == None and len(clicks)==0:
                         clicks = []
                     
