@@ -19,9 +19,8 @@ class Tile:
     def has_ally(self, color):
         return self.piece != None and self.piece.color == color
     
-    
-
-
+    def has_enemy(self, color):
+        return self.has_piece() and self.piece.color != color
 
 def inrange(rank, file):
     return (file >= 0 and file <= 7) and (rank >= 0 and rank <= 7)
