@@ -96,13 +96,15 @@ class Board:
 
                         
         return(self.all_moves_white, self.all_moves_black)
-    
+
     def incheck(self, piece, pos1, pos2):
         testboard = self.board.copy()
         self.testmove(piece, pos1, pos2, testboard)
+        #create a copy of the board, mkae the move, and have some function that evaluates the board 
+        #function calls evaluate board anf a pos number indicates win for white and win for black
+        #if white has won then like add 1000 points or something and if black has won add -1000
+        #recursively minimax algorithm LOOK UP RAHIM
         
-
-
         moves = []
         if self.curteam == "w":
             moves = self.get_all_moves()[1]
@@ -123,6 +125,7 @@ class Board:
                             #break
         if (self.curteam == "w" and self.get_all_moves()[0] == []) or (self.curteam == "b" and self.get_all_moves()[1] == []):
             print("stalemate")
+
 
 
     def nextturn(self):
