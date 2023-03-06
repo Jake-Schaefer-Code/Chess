@@ -2,6 +2,7 @@ import pygame
 import sys
 from Tile import *
 from pieces import *
+import copy
 
 piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
              "wkh", "wqh", "wrh", "wbh", "wnh", "wph", "bkh", "bqh", "brh", "bbh", "bnh", "bph"]
@@ -9,7 +10,6 @@ piecedic = {}
 squaredic = {}
 Width = 512
 Height = 512
-turns = []
 
 #IMPORTANT: calling a piece on the board acts like board[rank][file] or board[y][x]
 
@@ -57,7 +57,6 @@ class Board:
     def moveTo(self, piece, pos1, pos2):
         self.board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
-        turns.append((pos1,pos2))
 
     def testmove(self, piece, pos1, pos2, board):
         board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
@@ -160,7 +159,7 @@ class Board:
             print("stalemate") '''
     
     def inchecktest(self, piece, pos1, pos2):
-        testboard = self.board.copy()
+        testboard = copy.deepcopy(self.board)
         piece2 = testboard[pos2[1]][pos2[0]].piece
         testboard = self.testmove(piece, pos1, pos2, testboard)
         moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
