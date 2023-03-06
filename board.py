@@ -121,16 +121,19 @@ class Board:
                         
         return(self.all_moves_white, self.all_moves_black)
 
-    def incheck(self, piece, pos1, pos2):
-        testboard = self.board.copy()
-        self.testmove(piece, pos1, pos2, testboard)
+    def incheck(self):
+        moves = self.get_all_moves()[1] if self.curteam == "w" else self.get_all_moves()[0]
+        for m in moves:
+            itertile = self.board[m[1]][m[0]]
+            if isinstance(itertile.piece, King):
+                print("in check")
 
         #create a copy of the board, mkae the move, and have some function that evaluates the board 
         #function calls evaluate board anf a pos number indicates win for white and win for black
         #if white has won then like add 1000 points or something and if black has won add -1000
         #recursively minimax algorithm LOOK UP RAHIM
         
-        moves = []
+       ''' moves = []
         if self.curteam == "w":
             moves = self.get_all_moves()[1]
         elif self.curteam == "b":
@@ -149,7 +152,7 @@ class Board:
                             #print("checkmate")
                             #break
         if (self.curteam == "w" and self.get_all_moves()[0] == []) or (self.curteam == "b" and self.get_all_moves()[1] == []):
-            print("stalemate")
+            print("stalemate") '''
 
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
@@ -354,6 +357,7 @@ def main():
                         piece1.imagename = piece1.imagename[:2]
                         if piece1.color == board1.curteam and clicks[1] in piecemoves:
                             board1.moveTo(piece1, clicks[0],clicks[1])
+                            board1.incheck()
                             board1.nextturn()
                             
                         clicks = []
