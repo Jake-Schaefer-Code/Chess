@@ -63,7 +63,12 @@ class Board:
         board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
         board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
         return board
-
+    
+    def untestmove(self, piece1, piece2, pos1, pos2, board):
+        board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1],piece1)
+        board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece2)
+        return board
+      
     def callmove(self, piece, rank, file):
         move = Movetypes(piece, rank, file, self.board)
         if isinstance(piece, Pawn):
@@ -156,13 +161,14 @@ class Board:
     
     def inchecktest(self, piece, pos1, pos2):
         testboard = self.board.copy()
+        piece2 = testboard[pos2[1]][pos2[0]].piece
         testboard = self.testmove(piece, pos1, pos2, testboard)
         moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
         for m in moves:
             itertile = self.board[m[1]][m[0]]
             if isinstance(itertile.piece, King):
                 return True
-        
+        testboard = self.untestmove(piece, piece2, pos1, pos2, testboard)
         return False
 
     def nextturn(self):
