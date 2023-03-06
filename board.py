@@ -18,6 +18,8 @@ class Board:
         self.screen = screen
         self.color = None
         self.curteam = "w"
+        self.moves_dictw = {}
+        self.moves_dictb = {}
         self.board = [[Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0),Tile(0,0)] for _ in range(8)]
         for rank in range(8):
             for file in range(8):
@@ -31,7 +33,6 @@ class Board:
         self.board[7] = [Tile(0,7,Rook("w")), Tile(1,7,Knight("w")), Tile(2,7,Bishop("w")), Tile(3,7,Queen("w")),
                          Tile(4,7,King("w")), Tile(5,7,Bishop("w")), Tile(6,7,Knight("w")), Tile(7,7,Rook("w"))]
         
-
     def get_square(self, pos):
         return self.board[pos[1]][pos[0]]
     
@@ -78,6 +79,27 @@ class Board:
         if isinstance(piece, King):
             return move.k_moves()
     
+    def get_all_moves_test(self, board):
+        self.all_moves_white = []
+        self.all_moves_black = []
+        self.list1 = []
+        for rank in board:
+            for file in rank:
+                if file.piece != None:
+                    if file.piece.color == "w":
+                        self.list1 = self.callmove(file.piece, file.rank, file.file)
+                        if type(self.list1) is list:
+                            self.all_moves_white += self.list1
+                            self.moves_dictw[(file.file, file.rank)] = self.list1
+                    if file.piece.color == "b":
+                        self.list1 = self.callmove(file.piece, file.rank, file.file)
+                        if type(self.list1) is list:
+                            self.all_moves_black += self.list1
+                            self.moves_dictb[(file.file, file.rank)] = self.list1
+
+                        
+        return(self.all_moves_white, self.all_moves_black)
+    
     def get_all_moves(self):
         self.all_moves_white = []
         self.all_moves_black = []
@@ -89,10 +111,12 @@ class Board:
                         self.list1 = self.callmove(file.piece, file.rank, file.file)
                         if type(self.list1) is list:
                             self.all_moves_white += self.list1
+                            self.moves_dictw[(file.file, file.rank)] = self.list1
                     if file.piece.color != self.curteam:
                         self.list1 = self.callmove(file.piece, file.rank, file.file)
                         if type(self.list1) is list:
                             self.all_moves_black += self.list1
+                            self.moves_dictb[(file.file, file.rank)] = self.list1
 
                         
         return(self.all_moves_white, self.all_moves_black)
@@ -100,6 +124,7 @@ class Board:
     def incheck(self, piece, pos1, pos2):
         testboard = self.board.copy()
         self.testmove(piece, pos1, pos2, testboard)
+
         #create a copy of the board, mkae the move, and have some function that evaluates the board 
         #function calls evaluate board anf a pos number indicates win for white and win for black
         #if white has won then like add 1000 points or something and if black has won add -1000
@@ -126,12 +151,39 @@ class Board:
         if (self.curteam == "w" and self.get_all_moves()[0] == []) or (self.curteam == "b" and self.get_all_moves()[1] == []):
             print("stalemate")
 
-
-
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
 
+    def teamVal(self, color, board): #gets value of specified team's pieces
+        teamvalue = 0
+        for rank in board:
+            for file in rank:
+                if file.piece != None:
+                    if file.piece.color == color:
+                        teamvalue += file.piece.value
+        return teamvalue
 
+    def evalBoard(self, board): #checks if winning and by how much
+        whiteVal = self.teamVal("w", board)
+        blackVal = self.teamVal("b", board)
+        totVal = whiteVal - blackVal 
+        mult = 1 if self.curteam == "w" else -1 #if it is w's turn and b>w, then it returns a neg number - if it is b's turn and b>w, then it returns a pos number
+        return totVal * mult
+
+    def searchBoard(self, depth, board): #depth will be how far in advance the game will think
+        testboard = board.copy() #copies the input board
+        self.get_all_moves_test(testboard) #this will create dictionaries of the possible moves of each piece on the input board
+
+        if depth == 0: #base case
+            return self.evalBoard(testboard)
+
+        for key in self.moves_dictw.keys(): #for each piece on white
+            for move in self.moves_dictw[key]: #for each move for each piece on white
+                testboard2 = testboard.copy() #copies the input board
+                piece = testboard2[key[1]][key[0]].piece
+                testboard = self.testmove(piece, key, move, testboard2) #moves the piece on the input board
+                self.searchBoard(depth - 1, testboard) #recursively calls this function again with the new board
+        
 
 
     
