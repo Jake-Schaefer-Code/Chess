@@ -22,7 +22,7 @@ The player plays against an complex A.I., the difficulty of which is determined 
 
 **How does the Player operate the game?**
 
-Initially, the player will download all the files attached within our project. They must then install Pygame, and move the "chess_pieces" folder and the "WhiteBackground.jpeg" file to their home directory. They must then run the board.py file.
+Initially, the player will download all the files attached within our project. They must then install Pygame, and move the "chess_pieces" folder and the "WhiteBackground.jpeg" file to their home directory. They must then run the board.py file. A visual of a chessboard will pop up, and the game has commenced, with the player being offered the first move.
 
 The player begins by moving a white piece. This is achieved by clicking the tile containing the piece they wish to move, and then clicking a tile to which a legal move may be made. The opposing AI will move a black piece in turn. This sequence of events will continue until a checkmate occurs.
 The player may also engage in castling, en passant, and fancy draws, by clicking accordingly (EDIT).
