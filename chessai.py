@@ -22,3 +22,4 @@ def greed_ai():
 
     if white's move != to anything:
     call ai function to continue playing or break and call the function
+'''
