@@ -367,9 +367,12 @@ def main():
                     if len(clicks) == 2 and piece1 != None:
                         piece1.imagename = piece1.imagename[:2]
                         if piece1.color == board1.curteam and clicks[1] in piecemoves:
-                            board1.moveTo(piece1, clicks[0],clicks[1])
-                            board1.incheck()
-                            board1.nextturn()
+                            if not board1.inchecktest(piece1, clicks[0],clicks[1]):
+                                board1.moveTo(piece1, clicks[0],clicks[1])
+                                board1.nextturn()
+                                board1.incheck()
+                            else:
+                                print("cannot put your king into check")
                             
                         clicks = []
                     #print(clicks)
