@@ -153,6 +153,17 @@ class Board:
                             #break
         if (self.curteam == "w" and self.get_all_moves()[0] == []) or (self.curteam == "b" and self.get_all_moves()[1] == []):
             print("stalemate") '''
+    
+    def inchecktest(self, piece, pos1, pos2):
+        testboard = self.board.copy()
+        testboard = self.testmove(piece, pos1, pos2, testboard)
+        moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
+        for m in moves:
+            itertile = self.board[m[1]][m[0]]
+            if isinstance(itertile.piece, King):
+                return True
+        
+        return False
 
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
