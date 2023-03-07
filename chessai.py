@@ -58,3 +58,37 @@ def searchBoard(self, depth, board): #depth will be how far in advance the game 
             self.bestEval = max(self.eval, self.bestEval)
 
     return self.bestEval
+
+
+def minimax(self, depth, maximizer, board):
+        testboard = copy.deepcopy(board)
+        self.get_all_moves_test(testboard)
+        best_move = [(0,0), (1,1)] #change this to a random move
+        if depth == 0: #base case
+            return self.evalBoard(testboard)
+        
+        if maximizer: #maximizer is black - black wants the most points
+            max_eval = -10000
+            for key in self.moves_dictb.keys(): 
+                for move in self.moves_dictb[key]:
+                    piece1, piece2 = testboard[key[1]][key[0]].piece, testboard[move[1]][move[0]].piece
+                    testboard = self.testmove(piece1, key, move, testboard)        
+                    cur_eval = self.minimax(depth - 1, False, testboard)[1]
+                    testboard = self.untestmove(piece1, piece2, key, move, testboard)
+                    if cur_eval > max_eval:
+                        max_eval = cur_eval
+                        best_move = [key, move]
+            return best_move, max_eval
+
+        elif not maximizer: #minimizer is white
+            min_eval = 10000
+            for key in self.moves_dictw.keys(): 
+                for move in self.moves_dictw[key]:
+                    piece1, piece2 = testboard[key[1]][key[0]].piece, testboard[move[1]][move[0]].piece
+                    testboard = self.testmove(piece1, key, move, testboard)
+                    cur_eval = self.minimax(depth - 1, True, testboard)[1]
+                    testboard = self.untestmove(piece1, piece2, key, move, testboard)
+                    if cur_eval < min_eval:
+                        min_eval = cur_eval
+                        best_move = [key, move]
+            return best_move, min_eval
