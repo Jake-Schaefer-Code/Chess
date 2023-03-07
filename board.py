@@ -58,6 +58,10 @@ class Board:
         self.board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
         self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
 
+    def unmoveTo(self, piece1, piece2, pos1, pos2):
+        self.board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1],piece1)
+        self.board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece2)
+
     def testmove(self, piece, pos1, pos2, board):
         board[pos1[1]][pos1[0]] = Tile(pos1[0],pos1[1])
         board[pos2[1]][pos2[0]] = Tile(pos2[0],pos2[1],piece)
@@ -137,7 +141,7 @@ class Board:
         #if white has won then like add 1000 points or something and if black has won add -1000
         #recursively minimax algorithm LOOK UP RAHIM
         
-       ''' moves = []
+    ''' moves = []
         if self.curteam == "w":
             moves = self.get_all_moves()[1]
         elif self.curteam == "b":
@@ -159,21 +163,28 @@ class Board:
             print("stalemate") '''
     
     def inchecktest(self, piece, pos1, pos2):
+        test = False
         testboard = copy.deepcopy(self.board)
         piece2 = testboard[pos2[1]][pos2[0]].piece
         testboard = self.testmove(piece, pos1, pos2, testboard)
         moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
-        for m in moves:
-            itertile = self.board[m[1]][m[0]]
-            if isinstance(itertile.piece, King):
-                return True
+        while True:
+            for m in moves:
+                itertile = testboard[m[1]][m[0]]
+                print(isinstance(itertile.piece, King))
+                if isinstance(itertile.piece, King):
+                    test = True
+                    break
+            break
+        
         testboard = self.untestmove(piece, piece2, pos1, pos2, testboard)
-        return False
+        print(test)
+        return test
 
     def nextturn(self):
         self.curteam = "b" if self.curteam == "w" else "w"
 
-    def teamVal(self, color, board): #gets value of specified team's pieces
+    '''def teamVal(self, color, board): #gets value of specified team's pieces
         teamvalue = 0
         for rank in board:
             for file in rank:
@@ -201,7 +212,7 @@ class Board:
                 testboard2 = testboard.copy() #copies the input board
                 piece = testboard2[key[1]][key[0]].piece
                 testboard = self.testmove(piece, key, move, testboard2) #moves the piece on the input board
-                self.searchBoard(depth - 1, testboard) #recursively calls this function again with the new board
+                self.searchBoard(depth - 1, testboard) #recursively calls this function again with the new board'''
         
 
 
@@ -376,6 +387,7 @@ def main():
                                 board1.moveTo(piece1, clicks[0],clicks[1])
                                 board1.nextturn()
                                 board1.incheck()
+                                print("moved")
                             else:
                                 print("cannot put your king into check")
                             
