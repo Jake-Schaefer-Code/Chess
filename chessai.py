@@ -1,7 +1,7 @@
 checkmate = 1000
 stalemate = 0
 
-valuedict = {"p": 1, "n": 3, "b": 3.5, "r": 5, "q": 10, "k": 0}
+valuedict = {"p": 1, "n": 3, "b": 3.5, "r": 5, "q": 10, "k": 1000}
 
 def greed_ai():
     pass
