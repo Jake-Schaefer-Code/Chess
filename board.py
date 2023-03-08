@@ -3,6 +3,7 @@ import sys
 from Tile import *
 from pieces import *
 import copy
+import time
 
 
 PIECELIST = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
@@ -188,6 +189,7 @@ class Board:
         test = False
         self.bool = False
         testboard = copy.deepcopy(self.board)
+        print(pos2)
         piece2 = testboard[pos2[1]][pos2[0]].piece
         testboard = self.testmove(piece, pos1, pos2, testboard)
         moves = self.get_all_moves(testboard)[1] if piece.color == "w" else self.get_all_moves(testboard)[0]
@@ -229,13 +231,15 @@ class Board:
                 else:
                     for i in range(1, 8):
                         legalTile = (kingFile + check[2] * i, kingRank + check[3] * i)
-                        if legalTile not in legalTiles:
-                            piece = self.board[kingRank][kingFile].piece
-                            if not self.inchecktest(piece, (kingFile, kingRank), legalTile):
-
-                                legalTiles.append(legalTile)
-                        if legalTile[0] == checkingFile and legalTile[1] == checkingRank:
-                            break
+                        if inrange(legalTile[1], legalTile[0]):
+                            if legalTile not in legalTiles:
+                                piece = self.board[kingRank][kingFile].piece
+                                print(legalTile)
+                                if not self.inchecktest(piece, (kingFile, kingRank), legalTile):
+                                    
+                                    legalTiles.append(legalTile)
+                            if legalTile[0] == checkingFile and legalTile[1] == checkingRank:
+                                break
                 
             else:
                 kingTile = self.board[kingRank][kingFile]
@@ -431,6 +435,12 @@ def main():
                                     play_click()
                                 elif legal_moves == []:
                                     print("checkmate")
+                                    for _ in range(10):
+                                        play_click()
+                                        time.sleep(0.1)
+                                        
+                                    
+
                                 else:
                                     #print(legal_moves)
                                     print("not a legal move")
