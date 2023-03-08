@@ -361,17 +361,26 @@ class Movetypes:
                 file_move = file_move + file_dir
         return smoves
         
+def play_click():
+    click_effect = pygame.mixer.Sound("Vine_Boom.mp3")
+    pygame.mixer.Sound.set_volume(click_effect, 0.1)
+    pygame.mixer.Sound.play(click_effect)
+
+def play_music():
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.load("Memories.mp3")
+    pygame.mixer.music.play()
+
 def main():
     pygame.init()
     pygame.display.init()
+    pygame.mixer.init()
     screen = pygame.display.set_mode((WIDTH,HEIGHT))
     board1 = Board(screen)
     square = pygame.Rect((0,0), (512,512))
     startsq, piece1, piecemoves = None, None, None
     clicks = []
-    pygame.mixer.music.set_volume(0.2)
-    pygame.mixer.music.load("Memories.mp3")
-    pygame.mixer.music.play()
+    play_music()
     while True:
         
         for event in pygame.event.get():
@@ -387,20 +396,25 @@ def main():
                             if len(clicks) == 0 and selectedpiece.color == board1.curteam:
                                 clicks.append(selectedsq)
                                 startsq = selectedsq
+                                play_click()
                             elif len(clicks) == 1 and startsq == selectedsq:
                                 selectedpiece.imagename = selectedpiece.imagename[:2]
                                 clicks = []
                                 startsq = None
+                                play_click()
                             elif len(clicks) == 1 and selectedpiece.color != board1.curteam:
                                 clicks.append(selectedsq)
+                                play_click()
                             elif len(clicks) == 1 and selectedpiece.color == board1.curteam and piece1 != None:
                                 piece1.imagename = piece1.imagename[:2]
                                 selectedpiece.imagename = selectedpiece.imagename[:2]
                                 clicks = []
+                                play_click()
                             if len(clicks) == 1 and selectedpiece.color == board1.curteam:
                                 piece1 = selectedpiece
                                 selectedpiece.imagename = selectedpiece.imagename + "h"
                                 piecemoves = board1.callmove(piece1, clicks[0][1], clicks[0][0], board1.board)
+                                play_click()
                         elif selectedpiece == None and len(clicks)==0:
                             clicks = []
                         else:
@@ -414,6 +428,7 @@ def main():
                                 if clicks[1] in legal_moves:
                                     board1.moveTo(piece1, clicks[0],clicks[1])
                                     board1.nextturn()
+                                    play_click()
                                 elif legal_moves == []:
                                     print("checkmate")
                                 else:
@@ -425,11 +440,22 @@ def main():
                                 
                                 
                             clicks = []
-        '''if board1.curteam == "b": #make AI moves here
+                
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    pygame.mixer.music.unpause()
+                    print("unpaused music")
+                if event.key == pygame.K_s:
+                    pygame.mixer.music.pause()
+                    print("paused music")
+                
+            
+        
+
+            #if board1.curteam == "b": #make AI moves here
             #EX: board1.moveTo(piece, startpos, endpos)
-            pass''' 
-
-
+            
+        
         pygame.display.set_caption("Chess")
         boardimage = pygame.image.load("WhiteBackground.jpeg")
         screen.blit(boardimage, (0, 0))
