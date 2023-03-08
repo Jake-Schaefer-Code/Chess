@@ -361,8 +361,6 @@ class Movetypes:
                 file_move = file_move + file_dir
         return smoves
         
-
-
 def main():
     pygame.init()
     pygame.display.init()
@@ -371,14 +369,17 @@ def main():
     square = pygame.Rect((0,0), (512,512))
     startsq, piece1, piecemoves = None, None, None
     clicks = []
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.load("Memories.mp3")
+    pygame.mixer.music.play()
     while True:
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
-                    #if board1.get_all_moves(board1.board)[0] != []:
-                        #print(board1.get_all_moves(board1.board)[1])
+                    #if board1.curteam == "w":
                         
                         selectedsq = board1.makeButton(event.pos, square)
                         selectedpiece = board1.get_square(selectedsq).piece
