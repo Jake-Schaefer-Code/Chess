@@ -4,18 +4,25 @@ from Tile import *
 from pieces import *
 import copy
 
-piecelist = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
+
+PIECELIST = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
              "wkh", "wqh", "wrh", "wbh", "wnh", "wph", "bkh", "bqh", "brh", "bbh", "bnh", "bph"]
 piecedic = {}
-squaredic = {}
-Width = 512
-Height = 512
+for piece in PIECELIST:
+    piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
+WIDTH = 512
+HEIGHT = 512
+DIR = [(1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(-1,-1),(1,-1)]
+N_DIR = [(-2,-1),(-2,1),(-1,-2),(1,-2),(2,-1),(2,1),(-1,2),(1,2)]
+STR_DIR = [(1,0),(-1,0),(0,1),(0,-1)]
+DIAG_DIR = [(1,1),(-1,1),(-1,-1),(1,-1)]
 
 #IMPORTANT: calling a piece on the board acts like board[rank][file] or board[y][x]
 
 class Board:
     def __init__(self, screen):
         self.screen = screen
+        self.bool = True
         self.color = None
         self.curteam = "w"
         self.moves_dictw, self.moves_dictb = {}, {}
@@ -44,13 +51,12 @@ class Board:
                     self.color = (169,108,69)
                 else:
                     self.color = (245,198,156)
-                pygame.draw.rect(self.screen, self.color, pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8))
-                squaredic[(j,i)] = pygame.Rect((Width//8)*i,(Height//8)*j,Width//8,Height//8)
+                pygame.draw.rect(self.screen, self.color, pygame.Rect((WIDTH//8)*i,(HEIGHT//8)*j,WIDTH//8,HEIGHT//8))
 
     def makeButton(self, cur, rect):
             if rect.collidepoint(cur):
-                pos1 = pygame.mouse.get_pos()[0]//(Width//8)
-                pos2 = pygame.mouse.get_pos()[1]//(Height//8)
+                pos1 = pygame.mouse.get_pos()[0]//(WIDTH//8)
+                pos2 = pygame.mouse.get_pos()[1]//(HEIGHT//8)
                 return (pos1,pos2)
     
     def moveTo(self, piece, pos1, pos2):
@@ -68,7 +74,7 @@ class Board:
         return board
 
     def callmove(self, piece, rank, file, board):
-        move = Movetypes(piece, rank, file, board)
+        move = Movetypes(piece, rank, file, board, self, bool = self.bool)
         if isinstance(piece, Pawn):
             return move.p_moves()
         if isinstance(piece, Knight):
@@ -78,24 +84,18 @@ class Board:
         if isinstance(piece, Rook):
             return move.r_moves()
         if isinstance(piece, Queen):
-            #print(piece.imagename, rank, file)
             return move.q_moves()
         if isinstance(piece, King):
             return move.k_moves()
     
-    def get_all_moves_test(self, board):
+    def get_all_moves(self, board):
         self.all_moves_white = []
         self.all_moves_black = []
         self.list1 = []
-        '''for rank in board:
-            for tile in rank:
-                print(tile.piece)'''
         for rank in board:
             for tile in rank:
                 if tile.piece != None:
                     if tile.piece.color == "w":
-                        if isinstance(tile.piece, Queen):
-                            print(tile.piece.imagename, tile.rank, tile.file)
                         self.list1 = self.callmove(tile.piece, tile.rank, tile.file, board)
                         if type(self.list1) is list:
                             self.all_moves_white += self.list1
@@ -109,26 +109,58 @@ class Board:
                         
         return(self.all_moves_white, self.all_moves_black)
     
-    def get_all_moves(self):
+    def legal_moves(self):
         self.all_moves_white = []
         self.all_moves_black = []
-        self.list1 = []
-        for rank in self.board:
-            for file in rank:
-                if file.piece != None:
-                    if file.piece.color == "w":
-                        self.list1 = self.callmove(file.piece, file.rank, file.file, self.board)
-                        if type(self.list1) is list:
-                            self.all_moves_white += self.list1
-                            self.moves_dictw[(file.file, file.rank)] = self.list1
-                    if file.piece.color == "b":
-                        self.list1 = self.callmove(file.piece, file.rank, file.file, self.board)
-                        if type(self.list1) is list:
-                            self.all_moves_black += self.list1
-                            self.moves_dictb[(file.file, file.rank)] = self.list1
+        if self.curteam == "w":
+            enemyColor = "b"
+            allyColor = "w"
+            startrank = self.kingLoc(self.board)[0][1]
+            startfile = self.kingLoc(self.board)[0][0]
+        else:
+            enemyColor = "w"
+            allyColor = "b"
+            startrank = self.kingLoc(self.board)[1][1]
+            startfile = self.kingLoc(self.board)[1][0]
 
-                        
-        return(self.all_moves_white, self.all_moves_black)
+        
+    def inchecktest(self, piece, pos1, pos2):
+        test = False
+        self.bool = False
+        testboard = copy.deepcopy(self.board)
+        piece2 = testboard[pos2[1]][pos2[0]].piece
+        testboard = self.testmove(piece, pos1, pos2, testboard)
+        moves = self.get_all_moves(testboard)[1] if piece.color == "w" else self.get_all_moves(testboard)[0]
+        self.bool = True
+        while True:
+            for m in moves:
+                iterTile = testboard[m[1]][m[0]]
+                if isinstance(iterTile.piece, King):
+                    test = True
+                    break
+            break
+        testboard = self.untestmove(piece, piece2, pos1, pos2, testboard)
+        return test
+
+    def stalemate(self):
+        test = False
+        testboard = copy.deepcopy(self.board)
+        moves = self.get_all_moves(testboard)[1] if self.curteam == "w" else self.get_all_moves(testboard)[0]
+        if moves == []:
+            test = True
+        return test
+    
+    def checkmate(self):
+        test = False
+        testboard = copy.deepcopy(self.board)
+        moves = self.get_all_moves(testboard)[0] if self.curteam == "w" else self.get_all_moves(testboard)[1]
+        print(moves)
+        if moves == []:
+            test = True
+        return test
+    
+    def nextturn(self):
+        self.curteam = "b" if self.curteam == "w" else "w"
 
     '''def incheck(self):
         print("incheck fn")
@@ -138,52 +170,11 @@ class Board:
             if isinstance(itertile.piece, King):
                 print("in check")
                 return True
+
         #create a copy of the board, mkae the move, and have some function that evaluates the board 
         #function calls evaluate board anf a pos number indicates win for white and win for black
         #if white has won then like add 1000 points or something and if black has won add -1000
         #recursively minimax algorithm LOOK UP RAHIM'''
-        
-    def inchecktest(self, piece, pos1, pos2):
-        test = False
-        testboard = copy.deepcopy(self.board)
-        #print(piece, pos1, pos2)
-        piece2 = testboard[pos2[1]][pos2[0]].piece
-        testboard = self.testmove(piece, pos1, pos2, testboard)
-        '''for rank in testboard:
-            for tile in rank:
-                print(tile.piece)'''
-        moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
-        '''for key in self.moves_dictb:
-            print(key, self.moves_dictb[key])'''
-        while True:
-            for m in moves:
-                itertile = testboard[m[1]][m[0]]
-                if isinstance(itertile.piece, King):
-                    test = True
-                    break
-            break
-
-        testboard = self.untestmove(piece, piece2, pos1, pos2, testboard)
-        return test
-
-    def stalemate(self):
-        test = False
-        testboard = copy.deepcopy(self.board)
-        moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
-        if moves == []:
-            test = True
-        return test
-    
-    def checkmate(self):
-        test = False
-        testboard = copy.deepcopy(self.board)
-        moves = self.get_all_moves_test(testboard)[1] if self.curteam == "w" else self.get_all_moves_test(testboard)[0]
-        if moves == []:
-            test = True
-        return test
-    
-    def nextturn(self):
-        self.curteam = "b" if self.curteam == "w" else "w"
 
     '''def teamVal(self, color, board): #gets value of specified team's pieces
         teamvalue = 0
@@ -193,18 +184,22 @@ class Board:
                     if file.piece.color == color:
                         teamvalue += file.piece.value
         return teamvalue
+
     def evalBoard(self, board): #checks if winning and by how much
         whiteVal = self.teamVal("w", board)
         blackVal = self.teamVal("b", board)
         totVal = whiteVal - blackVal 
         mult = 1 if self.curteam == "w" else -1 #if it is w's turn and b>w, then it returns a neg number - if it is b's turn and b>w, then it returns a pos number
         return totVal * mult
+
     def searchBoard(self, depth, board): #depth will be how far in advance the game will think
         testboard = copy.deepcopy(board) #copies the input board
         self.get_all_moves_test(testboard) #this will create dictionaries of the possible moves of each piece on the input board
+
         if depth == 0: #base case
             return self.evalBoard(testboard)
             #create new function - search all captures and return that instead
+
         for key in self.moves_dictw.keys(): #for each piece on white
             for move in self.moves_dictw[key]: #for each move for each piece on white
                 testboard2 = copy.deepcopy(testboard) #copies the input board
@@ -214,6 +209,7 @@ class Board:
                 self.bestEval = max(self.eval, self.bestEval)
         
         return self.bestEval
+
     def minimax(self, depth, maximizer, board):
         testboard = copy.deepcopy(board)
         self.get_all_moves_test(testboard)
@@ -233,6 +229,7 @@ class Board:
                         max_eval = cur_eval
                         best_move = [key, move]
             return best_move, max_eval
+
         elif not maximizer: #minimizer is white
             min_eval = 10000
             for key in self.moves_dictw.keys(): 
@@ -245,6 +242,70 @@ class Board:
                         min_eval = cur_eval
                         best_move = [key, move]
             return best_move, min_eval'''
+    
+    def kingLoc(self, board):
+        wKingLoc, bKingLoc = (int,int), (int,int)
+        for rank in board:
+            for tile in rank:
+                if isinstance(tile.piece, King):
+                    if tile.piece.color == "w":
+                        wKingLoc = (tile.file,tile.rank)
+                    if tile.piece.color == "b":
+                        bKingLoc = (tile.file,tile.rank)
+        return wKingLoc, bKingLoc
+
+    def checkForPinsAndChecks(self):
+        pins = []
+        checks = []
+        inCheck = False
+        if self.curteam == "w":
+            enemyColor = "b"
+            startRank = self.kingLoc(self.board)[0][1]
+            startFile = self.kingLoc(self.board)[0][0]
+        else:
+            enemyColor = "w"
+            startRank = self.kingLoc(self.board)[1][1]
+            startFile = self.kingLoc(self.board)[1][0]
+        
+        for d in DIR:
+            possiblePin = ()
+            for i in range(8):
+                iterRank = startRank + d[0] * i
+                iterFile = startFile + d[1] * i
+                if inrange(iterRank, iterFile):
+                    iterTile = self.board[iterRank][iterFile]
+                    iterPiece = iterTile.piece
+                    if iterPiece != None:
+                        if iterTile.has_ally(self.curteam):
+                            if possiblePin == ():
+                                possiblePin = (iterRank, iterFile, d[0], d[1])
+                            else:
+                                break
+
+                        elif iterTile.has_enemy(self.curteam):
+                            if (isinstance(iterPiece, Rook) and (d in STR_DIR)) or (isinstance(iterPiece, Bishop) and (d in DIAG_DIR)) or \
+                                (isinstance(iterPiece, Pawn) and i==1 and ((self.curteam == "b" and (d in DIAG_DIR[2:])) or(self.curteam == "w"  and (d in DIAG_DIR[:2])))) or \
+                                (isinstance(iterPiece, Queen)) or (i==1 and isinstance(iterPiece, King)):
+                                if possiblePin == (): 
+                                    inCheck = True
+                                    checks.append((iterRank, iterFile, d[0], d[1]))
+                                    break
+                                else:
+                                    pins.append(possiblePin)
+                                    break
+                            else:
+                                break
+        for d in N_DIR:
+            iterRank = startRank + d[0]
+            iterFile = startFile + d[1]
+            if inrange(iterRank, iterFile):
+                iterTile = self.board[iterRank][iterFile]
+                iterPiece = iterTile.piece
+                if iterTile.has_enemy(self.curteam) and isinstance(iterPiece, Knight):
+                    inCheck = True
+                    checks.append((iterRank, iterFile, d[0], d[1]))
+        
+        return inCheck, pins, checks
 
 
 
@@ -252,19 +313,21 @@ class Board:
 def draw_piece(screen,tile):
     if tile.piece != None:
         image = tile.piece.imagename
-        screen.blit(pygame.transform.scale(piecedic[image],(Width//8,Height//8)), pygame.Rect((Width//8)*tile.file,(Height//8)*tile.rank,Width//8,Height//8))
+        screen.blit(pygame.transform.scale(piecedic[image],(WIDTH//8,HEIGHT//8)), pygame.Rect((WIDTH//8)*tile.file,(HEIGHT//8)*tile.rank,WIDTH//8,HEIGHT//8))
 
 class Movetypes:
-    def __init__(self, piece, rank, file, board):
+    def __init__(self, piece, rank, file, board, boardclass, bool = True):
         self.piece = piece
         self.rank = rank
         self.file = file
+        self.bool = bool
         self.board = board
+        self.boardclass = boardclass
         self.potmoves = []
+        
     
     def p_moves(self):
         firstmove = False
-        
         dir = []
         if self.piece.color == "w":
             dir = [(1,-1),(-1,-1)]
@@ -275,21 +338,42 @@ class Movetypes:
             firstmove = True
         if self.piece.color == "w":
             if self.board[self.rank-1][self.file].piece == None:
-                self.potmoves.append((self.file, self.rank-1))
+                if self.bool:
+                    if not self.boardclass.inchecktest(self.piece, (self.file,self.rank) ,(self.file, self.rank-1)):
+                        self.potmoves.append((self.file, self.rank-1))
+
+                else:
+                    self.potmoves.append((self.file, self.rank-1))
             if firstmove == True and self.board[self.rank-2][self.file].piece == None:
-                self.potmoves.append((self.file, self.rank-2))
+                if self.bool:
+                    if not self.boardclass.inchecktest(self.piece, (self.file,self.rank) ,(self.file, self.rank-1)):
+                        self.potmoves.append((self.file, self.rank-2))
+                else:
+                    self.potmoves.append((self.file, self.rank-2))
                    
         elif self.piece.color == "b":
             if self.board[self.rank+1][self.file].piece == None:
-                self.potmoves.append((self.file, self.rank+1))
+                if self.bool:
+                    if not self.boardclass.inchecktest(self.piece, (self.file,self.rank) ,(self.file, self.rank-1)):
+                        self.potmoves.append((self.file, self.rank+1))
+                else:
+                    self.potmoves.append((self.file, self.rank+1))
             if firstmove == True and self.board[self.rank+2][self.file].piece == None:
-                self.potmoves.append((self.file, self.rank+2))
+                if self.bool:
+                    if not self.boardclass.inchecktest(self.piece, (self.file,self.rank) ,(self.file, self.rank-1)):
+                        self.potmoves.append((self.file, self.rank+2))
+                else:
+                    self.potmoves.append((self.file, self.rank+2))
         
         for d in dir:
             if inrange(self.rank+d[1],self.file+d[0]):
                 if self.board[self.rank+d[1]][self.file+d[0]].piece != None:
                     if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
-                        self.potmoves.append((self.file+d[0],self.rank+d[1]))
+                        if self.bool:
+                            if not self.boardclass.inchecktest(self.piece, (self.file,self.rank) ,(self.file+d[0],self.rank+d[1])):
+                                self.potmoves.append((self.file+d[0],self.rank+d[1]))
+                        else:
+                            self.potmoves.append((self.file+d[0],self.rank+d[1]))
                 
 
         return self.potmoves
@@ -300,7 +384,11 @@ class Movetypes:
         for x,y in moves:
             itertile = Tile(x, y, self.board[y][x].piece)
             if itertile.emptytile() or not itertile.has_ally(self.piece.color):
-                self.potmoves.append((x,y))
+                if self.bool:
+                    if not self.boardclass.inchecktest(self.piece, (self.file,self.rank), (x,y)):
+                        self.potmoves.append((x,y))
+                else:
+                    self.potmoves.append((x,y))
         return self.potmoves
     
     def b_moves(self):
@@ -327,7 +415,15 @@ class Movetypes:
             if inrange(rank_move, file_move):
                 itertile = Tile(rank_move, file_move, self.board[rank_move][file_move].piece)
                 if itertile.emptytile() or not itertile.has_ally(self.piece.color):
-                    self.potmoves.append((file_move, rank_move))
+                    if self.bool:
+                        if not self.boardclass.inchecktest(self.piece, (self.file,self.rank), (file_move,rank_move)):
+                            self.potmoves.append((file_move,rank_move))
+                            print("not in check")
+                        else:
+                            print("in check")
+                    else:
+                        self.potmoves.append((file_move, rank_move))
+                        
         
         return self.potmoves
 
@@ -339,14 +435,23 @@ class Movetypes:
             file_move = self.file + file_dir
 
             while True:
+
                 if inrange(rank_move, file_move):
                     itertile = Tile(rank_move, file_move, self.board[rank_move][file_move].piece)
 
                     if itertile.emptytile(): #maybe put this in board class so can just call self.board[rank][file].emptytile
-                        smoves.append((file_move,rank_move)) 
+                        if self.bool:
+                            if not self.boardclass.inchecktest(self.piece, (self.file,self.rank), (file_move,rank_move)):
+                                self.potmoves.append((file_move,rank_move))
+                        else:
+                            self.potmoves.append((file_move,rank_move))
                     elif not itertile.emptytile():
                         if not itertile.has_ally(self.piece.color):
-                            smoves.append((file_move,rank_move)) 
+                            if self.bool:
+                                if not self.boardclass.inchecktest(self.piece, (self.file,self.rank), (file_move,rank_move)):
+                                    self.potmoves.append((file_move,rank_move))
+                            else:
+                                self.potmoves.append((file_move,rank_move))
                             break
                         elif itertile.has_ally(self.piece.color):
                             break
@@ -359,13 +464,10 @@ class Movetypes:
 
 
 def main():
-    
     pygame.init()
     pygame.display.init()
-    screen = pygame.display.set_mode((Width,Height))
+    screen = pygame.display.set_mode((WIDTH,HEIGHT))
     board1 = Board(screen)
-    for piece in piecelist:
-        piecedic[piece] = pygame.image.load("chess_pieces/"+piece+".PNG")
     square = pygame.Rect((0,0), (512,512))
     startsq, piece1, piecemoves = None, None, None
     clicks = []
@@ -375,61 +477,50 @@ def main():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: 
-                    #if board1.curteam == "b":
-                        #test the AI code here
-                        #board1.searchBoard(3, board1.board)
-
-
-
-                    selectedsq = board1.makeButton(event.pos, square)
-                    selectedpiece = board1.get_square(selectedsq).piece
-                    if selectedpiece != None:
+                    if board1.get_all_moves(board1.board)[0] != []:
+                        #print(board1.get_all_moves(board1.board)[1])
                         
-                        if len(clicks) == 0 and selectedpiece.color == board1.curteam:
+                        selectedsq = board1.makeButton(event.pos, square)
+                        selectedpiece = board1.get_square(selectedsq).piece
+                        if selectedpiece != None:
+                            if len(clicks) == 0 and selectedpiece.color == board1.curteam:
+                                clicks.append(selectedsq)
+                                startsq = selectedsq
+                            elif len(clicks) == 1 and startsq == selectedsq:
+                                selectedpiece.imagename = selectedpiece.imagename[:2]
+                                clicks = []
+                                startsq = None
+                            elif len(clicks) == 1 and selectedpiece.color != board1.curteam:
+                                clicks.append(selectedsq)
+                            elif len(clicks) == 1 and selectedpiece.color == board1.curteam and piece1 != None:
+                                piece1.imagename = piece1.imagename[:2]
+                                selectedpiece.imagename = selectedpiece.imagename[:2]
+                                clicks = []
+                            if len(clicks) == 1 and selectedpiece.color == board1.curteam:
+                                piece1 = selectedpiece
+                                selectedpiece.imagename = selectedpiece.imagename + "h"
+                                piecemoves = board1.callmove(piece1, clicks[0][1], clicks[0][0], board1.board)
+                        elif selectedpiece == None and len(clicks)==0:
+                            clicks = []
+                        else:
                             clicks.append(selectedsq)
                             startsq = selectedsq
-                        elif len(clicks) == 1 and startsq == selectedsq:
-                            selectedpiece.imagename = selectedpiece.imagename[:2]
-                            clicks = []
-                            startsq = None
-                        elif len(clicks) == 1 and selectedpiece.color != board1.curteam:
-                            clicks.append(selectedsq)
-                        elif len(clicks) == 1 and selectedpiece.color == board1.curteam and piece1 != None:
+                        if len(clicks) == 2 and piece1 != None:
                             piece1.imagename = piece1.imagename[:2]
-                            selectedpiece.imagename = selectedpiece.imagename[:2]
-                            clicks = []
-                        
-                        if len(clicks) == 1 and selectedpiece.color == board1.curteam:
-                            piece1 = selectedpiece
-                            selectedpiece.imagename = selectedpiece.imagename + "h"
-                            piecemoves = board1.callmove(piece1, clicks[0][1], clicks[0][0], board1.board)
-                        
-
-                    elif selectedpiece == None and len(clicks)==0:
-                        clicks = []
-                    
-                    else:
-                        clicks.append(selectedsq)
-                        startsq = selectedsq
-                    
-                    if len(clicks) == 2 and piece1 != None:
-                        piece1.imagename = piece1.imagename[:2]
-                        if piece1.color == board1.curteam and clicks[1] in piecemoves:
-                            if not board1.inchecktest(piece1, clicks[0],clicks[1]):
+                            if piece1.color == board1.curteam and clicks[1] in piecemoves:
+                                
                                 board1.moveTo(piece1, clicks[0],clicks[1])
                                 board1.nextturn()
-                                board1.stalemate() #trying to differentiate the functions for stalemate and checkmate - currently not working
-                                #board1.incheck()
+                                
+                            clicks = []
+                    #else:
+                        #print("checkmate: game over")    
+                        #print(clicks)
+        '''if board1.curteam == "b": #make AI moves here
+            #EX: board1.moveTo(piece, startpos, endpos)
+            pass''' 
 
-                            elif board1.inchecktest(piece1, clicks[0],clicks[1]):
-                                board1.checkmate() #works for checkmate but also prints when it is stalemate for some reason
-                                print("Checkmate")
-                            else:
-                                print("cannot put your king into check")
-                            
-                        clicks = []
-                    #print(clicks)
-        
+
         pygame.display.set_caption("Chess")
         boardimage = pygame.image.load("WhiteBackground.jpeg")
         screen.blit(boardimage, (0, 0))
