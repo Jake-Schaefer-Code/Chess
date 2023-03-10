@@ -4,6 +4,7 @@ from Tile import *
 from pieces import *
 import copy
 import time
+import random
 
 
 PIECELIST = ["wk", "wq", "wr", "wb", "wn", "wp", "bk", "bq", "br", "bb", "bn", "bp", 
@@ -123,8 +124,105 @@ class Board:
                         self.moves_dict[(i,j)] = self.moveList
 
         return (self.all_moves_white, self.all_moves_black, self.moves_dict) 
-        
+
+    def teamVal(self, color, board): #gets value of specified team's pieces
+        teamvalue = 0
+        for rank in board:
+            for file in rank:
+                if file.piece != None:
+                    if file.piece.color == color:
+                        teamvalue += file.piece.value
+        return teamvalue
     
+    def evalBoard(self, board): #checks if winning and by how much
+        whiteVal = self.teamVal("w", board)
+        blackVal = self.teamVal("b", board)
+        totVal =  blackVal - whiteVal 
+        return totVal
+
+    def searchBoard(self, depth, board, firstcall = True): #depth will be how far in advance the game will think
+        if firstcall == True:
+            self.bestEval = -10000
+            self.bestMove = (0,0)
+            self.bestMoveKey = (1,0)
+            
+        testboard = copy.deepcopy(board) #copies the input board
+        self.get_all_moves(testboard) #this will create dictionaries of the possible moves of each piece on the input board
+        if depth == 0: #base case
+            return (self.evalBoard(testboard), self.bestMove, self.bestMoveKey)
+            #create new function - search all captures and return that instead
+        else:
+            for key in self.moves_dict.keys(): #for each piece
+                for move in self.moves_dict[key]: #for each move for each piece
+                    testboard2 = copy.deepcopy(testboard) #copies the input board
+                    piece = testboard2[key[1]][key[0]].piece
+                    if testboard2[key[1]][key[0]].piece != None:
+                        testboard = self.testmove(piece, key, move, testboard2) #moves the piece on the input board
+                        self.curEval = self.searchBoard(depth - 1, testboard, False)[0] #recursively calls this function again with the new board
+                        self.curMove, self.curMoveKey = move, key
+                        if self.curEval > self.bestEval:
+                            print(self.bestEval, self.curEval)
+                            self.bestEval = self.curEval
+                            self.bestMove = self.curMove
+                            self.bestMoveKey = self.curMoveKey
+
+        return (self.bestEval, self.bestMove, self.bestMoveKey)
+
+    def minimax(self, depth, maximizer, alpha, beta, board):
+        testboard = copy.deepcopy(board)
+        
+        if depth == 0:
+            
+            return self.evalBoard(testboard)
+
+
+        if maximizer:
+            self.get_all_moves(testboard)
+            bestVal = -100000
+            for key in self.moves_dict.keys(): #for each child node
+                for move in self.moves_dict[key]:
+                    piece = testboard[key[1]][key[0]].piece
+                    piece2 = testboard[move[1]][move[0]].piece
+                    testboard = self.testmove(piece, key, move, testboard)
+                    value = self.minimax(depth-1, False, alpha, beta, testboard)
+                    testboard = self.untestmove(piece, piece2, key, move, testboard)
+                    bestVal = max(bestVal, value) 
+                    print(bestVal)
+                    alpha = max(alpha, bestVal)
+                    if beta <= alpha:
+                        break
+            return bestVal
+        
+        else:
+            self.get_all_moves(testboard)
+            bestVal = 100000
+            for key in self.moves_dict.keys(): #for each child node
+                for move in self.moves_dict[key]:
+                    piece = testboard[key[1]][key[0]].piece
+                    piece2 = testboard[move[1]][move[0]].piece
+                    testboard = self.testmove(piece, key, move, testboard)
+                    value = self.minimax(depth-1, True, alpha, beta, testboard)
+                    testboard = self.untestmove(piece, piece2, key, move, testboard)
+                    bestVal = min(bestVal, value) 
+                    print(bestVal)
+                    beta = min(beta, bestVal)
+                    if beta <= alpha:
+                        break
+            return bestVal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Movetypes:
@@ -146,7 +244,7 @@ class Movetypes:
         if (self.piece.color == "w" and self.rank == 6) or (self.piece.color == "b" and self.rank == 1):
             firstmove = True
 
-        if self.board[self.rank+i][self.file].piece == None:
+        if inrange(self.rank+i, self.file) and self.board[self.rank+i][self.file].piece == None:
             move = (self.file, self.rank+i)
             self.callincheck(move)
             
@@ -162,9 +260,11 @@ class Movetypes:
                     if not self.board[self.rank][self.file].samecolor(self.board[self.rank+d[1]][self.file+d[0]].piece.color):
                         move = (self.file+d[0],self.rank+d[1])
                         self.callincheck(move)
+        
+        if (self.piece.color == "w" and self.rank == 0) or (self.piece.color == "b" and self.rank == 7):
+            print("promotion")
                         
                 
-
         return self.potmoves
     
     def n_moves(self):
@@ -225,7 +325,7 @@ class Movetypes:
                             move = (file_move, rank_move) #cannot do self.callincheck(move) here bc need to break loop in some instances
                             if self.bool == True:
                                 if not self.incheckmove(move):
-                                    print(move)
+                                    #print(move)
                                     self.potmoves.append(move)
                                     break
                             else:
@@ -253,7 +353,7 @@ class Movetypes:
                     for m in enemy_moves:
                         if isinstance(testboard[m[1]][m[0]].piece, King):
                             return True
-        print("valid move at", move)
+        #print("valid move at", move)
         return False
 
     def testmovepiece(self, piece, pos1, pos2, board):
@@ -264,14 +364,10 @@ class Movetypes:
     def callincheck(self, move):
         if self.bool == True:
                 if not self.incheckmove(move):
-                    print(move)
+                    #print(move)
                     self.potmoves.append(move)
         else:
             self.potmoves.append(move)
-
-                
-        
-
 
 
 
@@ -279,6 +375,16 @@ def draw_piece(screen,tile):
     if tile.piece != None:
         image = tile.piece.imagename
         screen.blit(pygame.transform.scale(piecedic[image],(WIDTH//8,HEIGHT//8)), pygame.Rect((WIDTH//8)*tile.file,(HEIGHT//8)*tile.rank,WIDTH//8,HEIGHT//8))
+
+def play_click():
+    click_effect = pygame.mixer.Sound("Vine_Boom.mp3")
+    pygame.mixer.Sound.set_volume(click_effect, 0.1)
+    pygame.mixer.Sound.play(click_effect)
+
+def play_music():
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.load("Memories.mp3")
+    pygame.mixer.music.play()
 
 def main():
     pygame.init()
@@ -289,6 +395,7 @@ def main():
     square = pygame.Rect((0,0), (512,512))
     startsq, piece1, piecemoves = None, None, None
     clicks = []
+    play_music()
     firstmove = True
     while True:
         
@@ -304,25 +411,26 @@ def main():
                             if len(clicks) == 0 and selectedpiece.color == board1.curteam:
                                 clicks.append(selectedsq)
                                 startsq = selectedsq
-                                
+                                play_click()
                             elif len(clicks) == 1 and startsq == selectedsq:
                                 selectedpiece.imagename = selectedpiece.imagename[:2]
                                 clicks = []
                                 startsq = None
-                                
+                                play_click()
                             elif len(clicks) == 1 and selectedpiece.color != board1.curteam:
                                 clicks.append(selectedsq)
-                                
+                                play_click()
                             elif len(clicks) == 1 and selectedpiece.color == board1.curteam and piece1 != None:
                                 piece1.imagename = piece1.imagename[:2]
                                 selectedpiece.imagename = selectedpiece.imagename[:2]
                                 clicks = []
-                                
+                                play_click()
                             if len(clicks) == 1 and selectedpiece.color == board1.curteam:
                                 piece1 = selectedpiece
                                 selectedpiece.imagename = selectedpiece.imagename + "h"
                                 piecemoves = board1.callmove(piece1, clicks[0], board1.board)
-                                
+                                play_click()
+
                         elif selectedpiece == None and len(clicks)==0:
                             clicks = []
                         else:
@@ -333,6 +441,7 @@ def main():
                             moves = board1.get_all_moves(board1.board)[0] if board1.curteam == "w" else board1.get_all_moves(board1.board)[1]
                             if piece1.color == board1.curteam and clicks[1] in piecemoves:
                                 board1.moveTo(piece1, clicks[0],clicks[1])
+                                play_click()
                                 board1.nextturn()
 
                             elif moves == []:
@@ -343,14 +452,59 @@ def main():
                             clicks = []
             
             if board1.curteam == "b": #make AI moves here
+                print("black's score:", board1.evalBoard(board1.board))
+                
                 if firstmove == True:
                     board1.moveTo(board1.board[1][4].piece, (4,1), (4,3))
                     firstmove = False
                     board1.nextturn()
-                
-            #EX: board1.moveTo(piece, startpos, endpos)
+                elif board1.get_all_moves(board1.board)[1] == []:
+                    print("checkmate white wins")
+                else:
+                    moves = board1.get_all_moves(board1.board)[2]
+                    starttile = random.choice(list(moves.keys()))
+                    while True:
+                        if board1.board[starttile[1]][starttile[0]].piece != None and board1.board[starttile[1]][starttile[0]].piece.color == "b":
+                            if moves[starttile] != []:
+                                
+                                move = random.choice(moves[starttile])
+                                break
+                            else:
+                                starttile = random.choice(list(moves.keys()))
+                        else:
+                            starttile = random.choice(list(moves.keys()))
+                   
+                    
+                    best_piece = -10
+                    
+                    for key in moves:
+                        if board1.board[key[1]][key[0]].piece != None and board1.board[key[1]][key[0]].piece.color == "b":
+                            for tile in moves[key]:
+                                if board1.board[tile[1]][tile[0]].piece != None and board1.board[tile[1]][tile[0]].piece.color == "w":
+                                    cur_piece = board1.board[tile[1]][tile[0]].piece.value
+                                    if cur_piece > best_piece:
+                                        best_piece = cur_piece
+                                        move = tile
+                                        starttile = key
+                                              
+                        
+                    
+                    board1.moveTo(board1.board[starttile[1]][starttile[0]].piece, (starttile[0],starttile[1]), (move[0],move[1]))
+                    play_click()
+                    board1.nextturn()
+
+
+                        
             
-        
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    pygame.mixer.music.unpause()
+                    print("unpaused music")
+                if event.key == pygame.K_s:
+                    pygame.mixer.music.pause()
+                    print("paused music")
+
+
         pygame.display.set_caption("Chess")
         boardimage = pygame.image.load("WhiteBackground.jpeg")
         screen.blit(boardimage, (0, 0))
