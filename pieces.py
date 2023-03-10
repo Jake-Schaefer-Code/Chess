@@ -16,32 +16,32 @@ class Knight: # intialization of the knight class
         self.color = color # allows a color to be assigned
         self.value = piecevals["n"] #accesses the value dictionary written above
         self.imagename = self.color + "n" #accessing the name of the knight by combining the color with the letter n
-        self.dir = -1 if self.color == "w" else 1
+        self.dir = -1 if self.color == "w" else 1 #assigns a direction to the piece
 
 class Bishop: # intialization of the bishop class
     def __init__(self, color):
         self.color = color # allows a color to be assigned
         self.value = piecevals["b"] #accesses the value dictionary written above
         self.imagename = self.color + "b" #accessing the name of the bishop by combining the color with the letter b
-        self.dir = -1 if self.color == "w" else 1
+        self.dir = -1 if self.color == "w" else 1 #assigns a direction to the piece
 
 class Rook: # intialization of the rook class
     def __init__(self, color):
         self.color = color # allows a color to be assigned
         self.value = piecevals["r"] #accesses the value dictionary written above
         self.imagename = self.color + "r" #accessing the name of the rook by combining the color with the letter r
-        self.dir = -1 if self.color == "w" else 1
+        self.dir = -1 if self.color == "w" else 1 #assigns a direction to the piece
 
 class Queen: # intialization of the queen class
     def __init__(self, color):
         self.color = color # allows a color to be assigned
         self.value = piecevals["q"] #accesses the value dictionary written above
         self.imagename = self.color + "q" #accessing the name of the queen by combining the color with the letter q
-        self.dir = -1 if self.color == "w" else 1
+        self.dir = -1 if self.color == "w" else 1 #assigns a direction to the piece
 
 class King: # intialization of the king class
     def __init__(self, color):
         self.color = color # allows a color to be assigned
         self.value = piecevals["k"] #accesses the value dictionary written above
         self.imagename = self.color + "k" #accessing the name of the king by combining the color with the letter k
-        self.dir = -1 if self.color == "w" else 1
+        self.dir = -1 if self.color == "w" else 1 #assigns a direction to the piece
