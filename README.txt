@@ -17,7 +17,8 @@ The player is assigned to the white pieces, and the AI to the black pieces.
 
 How is AI implemented?
 
-Currently, the AI plays random moves (aside from the opening move e5), selected from a list of valid moves. We are working to try and implement basic openings and a system to evaluate the best moves for both sides and play accordingly. 
+The AI goes after pieces it can capture in a hierarchy (Queen, Rook, Bishop, Knight then Pawn), otherwise playing random moves if no immediate captures are
+available. 
 
 ------------
 
@@ -52,11 +53,11 @@ The chessai.py contains code for the AI, currently not integrated into the main 
 
 Additionally - there are .png images for each piece in the game (black and white respectively) in addition to their highlighted counterparts. Additionally the 
 "WhiteBackground.jpeg" is needed to initialize the board. The audio files "piecenoise.mp3" and "Kaisse.mp3" are used for playing the piece moving noises and 
-background music that plays during the game. 
+background music that plays during the game. These should be loaded into the .venv file of the project if they are not already present (which they should already be)
 
 ------------
 
 Any known bugs/issues with the program?
 
-Currently, the features for pawn promotion, stalemate and castling have not been implemented. The AI is also as of yet not able to parse potential moves and make moves
-accordingly.
+Currently, the features for stalemate and castling have not been implemented. The AI is also as of yet not able to parse potential moves and make moves
+accordingly. Pawn Promotion currently does not occur and results in the pawns simply stopping at the end of the board. 
