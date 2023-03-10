@@ -41,6 +41,21 @@ Checkmate occurs when the king is in check and there are no other legal moves th
 
 ------------
 
+How to Run The Game:
+
+The main file is the board_random_AI.py file, which contains the code for: Board class (methods: self, get_square, draw, makeButton, nextturn, kingLoc, moveTo, 
+testmove, untestmove, callmove, get_all_moves), Movetypes class (moves for each piece, types of moves, check functions) and the main function. This is the file that 
+should be actually run to play the game. 
+The pieces.py file initializes the color and piece names for each piece
+The Tile.py file contains the Tile class, defining functions for checking for empty tiles, enemy and ally tiles and checks for color of pieces
+The chessai.py contains code for the AI, currently not integrated into the main file
+
+Additionally - there are .png images for each piece in the game (black and white respectively) in addition to their highlighted counterparts. Additionally the 
+"WhiteBackground.jpeg" is needed to initialize the board. The audio files "piecenoise.mp3" and "Kaisse.mp3" are used for playing the piece moving noises and 
+background music that plays during the game. 
+
+------------
+
 Any known bugs/issues with the program?
 
 None that we, the coders, and the play-testers have discovered over numerous hours of testing the program.
