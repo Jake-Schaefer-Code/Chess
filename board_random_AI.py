@@ -357,8 +357,7 @@ def main():
                     firstmove = False
                     board1.nextturn()
                 elif board1.get_all_moves(board1.board)[1] == []:
-                    print("racism mode activated")
-                    board1.nextturn()
+                    print("Checkmate - White Wins")
                 else:
                     moves = board1.get_all_moves(board1.board)[2]
                     tile = random.choice(list(moves.keys()))
