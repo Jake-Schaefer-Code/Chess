@@ -58,4 +58,5 @@ background music that plays during the game.
 
 Any known bugs/issues with the program?
 
-None that we, the coders, and the play-testers have discovered over numerous hours of testing the program.
+Currently, the features for pawn promotion, stalemate and castling have not been implemented. The AI is also as of yet not able to parse potential moves and make moves
+accordingly.
