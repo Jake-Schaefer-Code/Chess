@@ -42,7 +42,7 @@ Checkmate occurs when the king is in check and there are no other legal moves th
 
 ------------
 
-How to Run The Game:
+How to Run The Game, and Understanding the Files:
 
 The player will begin by running the board.py file (Visual Studio Code is recommended). The chess game will commence.
 
@@ -53,6 +53,8 @@ should be actually run to play the game.
 The pieces.py file initializes the color and piece names for each piece.
 
 The Tile.py file contains the Tile class, defining functions for checking for empty tiles, enemy and ally tiles and checks for color of pieces.
+
+The chessai.py contains code for the AI, but it's currently not integrated into the main file. It's currently preserved should it be refined enough to be integrated into the game.
 
 Additionally - there are .png images for each piece in the game (black and white respectively) in addition to their highlighted counterparts. Additionally the 
 "WhiteBackground.jpeg" is needed to initialize the board. The audio files "piecenoise.mp3" and "Kaisse.mp3" are used for playing the piece moving noises and 
