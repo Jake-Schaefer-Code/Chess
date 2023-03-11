@@ -32,12 +32,11 @@ Rules:
 White begins on as the first turn, with turns alternating between black and white after that.
 Pawns may move one or two spaces on their first turn, but only one space on subsequent turns. They capture one space diagonally in front of them.
 Bishops move on the either light or dark square diagonals.
-Knights move in an L-shape
-Rooks move straight across ranks and files they occupy
-Queens move both diagonals and straight across occupied ranks and files
-Kings can move one square in any direction
-Check occurs when an enemy piece is attacking the King. No move can be made that does not either move the King out of the way, captures the checking piece or places 
-a piece in between the king and the checking piece (aside from the Knight).
+Knights move in an L-shape.
+Rooks move straight across ranks and files they occupy.
+Queens move both diagonals and straight across occupied ranks and files.
+Kings can move one square in any direction.
+Check occurs when an enemy piece is attacking the King. No move can be made that does not either move the King out of the way, captures the checking piece or places a piece in between the king and the checking piece (aside from the Knight).
 Checkmate occurs when the king is in check and there are no other legal moves the side being checked is able to make to break the check. This ends the game. 
 
 ------------
