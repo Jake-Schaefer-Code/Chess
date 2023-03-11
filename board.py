@@ -33,7 +33,7 @@ class Board:
         for rank in range(8):
             for file in range(8):
                 self.board[rank][file] = Tile(file, rank)
-        #Placiong pieces on tiles below
+        #Placing pieces on tiles below
         self.board[0] = [Tile(0,0,Rook("b")), Tile(1,0,Knight("b")), Tile(2,0,Bishop("b")), Tile(3,0,Queen("b")),
                          Tile(4,0,King("b")), Tile(5,0,Bishop("b")), Tile(6,0,Knight("b")), Tile(7,0,Rook("b"))]
         self.board[1] = [Tile(0,1,Pawn("b")), Tile(1,1,Pawn("b")), Tile(2,1,Pawn("b")), Tile(3,1,Pawn("b")),
