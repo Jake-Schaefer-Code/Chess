@@ -16,7 +16,7 @@ The player is assigned to the white pieces, and the AI to the black pieces.
 
 **How is AI implemented?**
 
-The player plays against an complex A.I., the difficulty of which is determined by its training on the Chess.com games of one of our team members.
+The player plays against a basic A.I. A complex version is yet to be added.
 
 ------------
 
